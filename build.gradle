@@ -1,0 +1,49 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.wisepersist.gwt' version '1.1.18'  // Required for GWT compatibility
+}
+
+group = 'site.klade'
+version = '0.0.1'
+sourceCompatibility = JavaVersion.VERSION_11  // libGDX requires Java 11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api "com.badlogicgames.ashley:ashley:1.7.4"
+    api "com.badlogicgames.gdx:gdx:1.14.0"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// GWT module configuration
+gwt {
+    modules = ["site.klade.simulation.Simulation"]
+    sourceLevel = '1.11'
+}
+
+// Publish to local Maven repository for sharing
+tasks.register('installToMavenLocal') {
+    dependsOn 'publishToMavenLocal'
+}
+
+java {
+    withSourcesJar()
+}
+
+// Simple JAR publication for local consumption
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}

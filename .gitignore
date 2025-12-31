@@ -1,0 +1,38 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# GWT (for libGDX HTML5 compatibility)
+war/
+gwt-unitCache/
+
+# Java
+*.class
+hs_err_pid*
+.attach_pid*
+
+# Package archives (keep source control clean)
+*.jar
+*.war
+*.ear
+
+# Log files
+*.log
+
+# Temporary/backup files
+*~
+*.bak
+*.swp
+*.tmp
