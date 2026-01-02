@@ -1,6 +1,7 @@
+# File: simulation/.github/workflows/deploy.yml
 name: Deploy Simulation Library
 
-on:
+on:ii
   push:
     branches: [ master ]
   workflow_dispatch:
@@ -8,7 +9,6 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -28,10 +28,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew publish
 
-      - name: Trigger Main Project Rebuild
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.MAIN_REPO_TRIGGER_TOKEN }}
-          repository: SlyCright/Klade
-          event-type: dependency-update
-          client-payload: '{"source": "simulation", "version": "${{ github.sha }}"}'
+      - name: Trigger Main Deployment
+        run: |
+          gh api repos/SlyCright/Klade/dispatches \
+            -f event_type=deploy-main
+        env:
+          GITHUB_TOKEN: ${{ secrets.MAIN_REPO_TRIGGER_TOKEN }}
