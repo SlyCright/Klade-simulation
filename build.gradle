@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'site.klade'
-version = '0.0.1'
+version = '0.0.1-SNAPSHOT'
 sourceCompatibility = JavaVersion.VERSION_11  // libGDX requires Java 11
 
 repositories {
