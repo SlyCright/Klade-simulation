@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Component;
 
 public class RhythmNodeComponent implements Component {
 
-    public static final int PERIOD_TICKS = 100;
+    public static final int PERIOD_TICKS = 10;
 
     public long tick;
 
