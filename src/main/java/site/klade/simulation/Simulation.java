@@ -29,7 +29,6 @@ public class Simulation {
         engine.update(0.0f);
     }
 
-
     public SimulationDto getSimulationDto() {
         SimulationStateComponent stateComponent =
                 stateEntity.getComponent(SimulationStateComponent.class);
