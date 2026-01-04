@@ -23,7 +23,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build Library
-        run: ./gradlew clean build
+        run: ./gradlew clean build --refresh-dependencies
 
       - name: Publish to GitHub Packages
         env:
