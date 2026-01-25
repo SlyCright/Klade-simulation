@@ -1,9 +1,11 @@
 # Klade Simulation - Shared ECS Engine
 
-**Version:** 2025.12.31_ver.01
+**Version:** 2025.01.25_ver.02
 
 ## Description
 The shared simulation engine for Klade Evolutionary Simulation Game. This library contains the Entity Component System (ECS) framework, physics calculations, and genetic algorithms that power both the server-side simulation and client-side visualization. It serves as the architectural backbone ensuring consistency between backend logic and frontend rendering.
+
+## Live Site: [klade.site](https://klade.site/)
 
 ## Vision
 A high-performance, deterministic simulation core that enables complex evolutionary computations while maintaining strict separation between simulation logic and presentation layers. The engine is designed to be deterministic and reproducible, allowing the same genetic algorithms to run identically on both server and client for verification and replay purposes.
@@ -45,7 +47,7 @@ The library intentionally contains **no networking, authentication, or rendering
 ## Community & Support
 - **Main Repository**: https://github.com/SlyCright/Klade
 - **Stage Repository**: https://github.com/SlyCright/klade-stage
-- **Funding**: https://boosty.to/klade
+- **Funding**: https://boosty.to/klade (RUS)
 - **License**: Apache 2.0
 
 ## License
