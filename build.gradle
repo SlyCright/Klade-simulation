@@ -16,6 +16,16 @@ repositories {
 dependencies {
     api "com.badlogicgames.ashley:ashley:1.7.4"
     api "com.badlogicgames.gdx:gdx:1.14.0"
+    
+    // Lombok for reducing boilerplate code
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    // Test dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.0'
+    testImplementation 'org.mockito:mockito-core:5.14.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.14.2'
+    testImplementation 'org.assertj:assertj-core:3.26.3'
 }
 
 test {
