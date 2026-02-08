@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("unused")
 public class Simulation {
@@ -30,9 +31,7 @@ public class Simulation {
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
     @Getter
-    private volatile SimulationSnapshotDto snapShot;
-
-    private final Random random = new Random();
+    private volatile SimulationSnapshotDto snapshot;
 
     public static Simulation withDefaultSettings() {
         return with(SettingsDto.builder().build());
@@ -55,7 +54,7 @@ public class Simulation {
         for (int i = 0; i < SPECIES_TOTAL; i++) {
             speciesList.add(new Species(SPECIMENS_PER_SPECIES));
         }
-        this.snapShot = new SimulationSnapshotDto(
+        this.snapshot = new SimulationSnapshotDto(
                 generationNumber.get(),
                 DataTransferUtilities.getDeepCopyOf(speciesList));
     }
@@ -109,11 +108,11 @@ public class Simulation {
 
     private void update() {
         if (sleepInterrupted()) return;
-        fitnessCalculation();
-        this.snapShot = new SimulationSnapshotDto(
-                generationNumber.incrementAndGet(),
+        calculateFitnesses();
+        this.snapshot = new SimulationSnapshotDto(
+                generationNumber.getAndIncrement(),
                 DataTransferUtilities.getDeepCopyOf(speciesList));
-        offspringsGeneration();
+        createNextGeneration();
     }
 
     private boolean sleepInterrupted() {
@@ -127,7 +126,7 @@ public class Simulation {
         return false;
     }
 
-    private void fitnessCalculation() {
+    private void calculateFitnesses() {
         for (var species : speciesList) {
             for (var genome : species.getGenomes()) {
                 new Arena(genome).run();
@@ -135,7 +134,8 @@ public class Simulation {
         }
     }
 
-    private void offspringsGeneration() {
+    private void createNextGeneration() {
+        final var random = new Random();
         var offspringsSpeciesList = new ArrayList<Species>();
         for (var species : speciesList) {
             var genomes = species.getGenomes();

@@ -50,7 +50,7 @@ public class SimulationTest {
         Simulation simulation = Simulation.withDefaultSettings();
 
         // When
-        var snapshot = simulation.getSnapShot();
+        var snapshot = simulation.getSnapshot();
 
         // Then
         assertThat(snapshot).isNotNull();
@@ -62,13 +62,13 @@ public class SimulationTest {
     void givenSimulationNotRunning_whenRunCertainGenerations_thenGenerationsAdvanced() {
         // Given
         Simulation simulation = Simulation.withDefaultSettings();
-        int initialGen = simulation.getSnapShot().getGenerationNumber();
+        int initialGen = simulation.getSnapshot().getGenerationNumber();
 
         // When
         simulation.runCertainGenerations(3);
 
         // Then
-        assertThat(simulation.getSnapShot().getGenerationNumber()).isEqualTo(initialGen + 3);
+        assertThat(simulation.getSnapshot().getGenerationNumber()).isEqualTo(initialGen + 2);
     }
 
     @DisplayName("Given simulation advanced, when reset is called, then simulation is reset to initial state")
@@ -82,8 +82,8 @@ public class SimulationTest {
         simulation.reset();
 
         // Then
-        assertThat(simulation.getSnapShot().getGenerationNumber()).isEqualTo(0);
-        assertThat(simulation.getSnapShot().getSpeciesList()).isNotEmpty();
+        assertThat(simulation.getSnapshot().getGenerationNumber()).isEqualTo(0);
+        assertThat(simulation.getSnapshot().getSpeciesList()).isNotEmpty();
     }
 
     @DisplayName("Given simulation, when stop is called, then no exception is thrown")
