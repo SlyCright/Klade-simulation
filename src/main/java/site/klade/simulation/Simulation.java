@@ -23,7 +23,9 @@ public class Simulation {
 
     private ArrayList<Species> speciesList = new ArrayList<>();
 
-    private final ExecutorService executor;
+    // TODO: Use thread pool in future. Single thread is for MVP to prevent complexity of thread
+    //  management
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
@@ -44,13 +46,6 @@ public class Simulation {
         this.SPECIES_TOTAL = settings.getSpeciesTotal();
         this.SPECIMENS_PER_SPECIES = settings.getSpecimensPerSpecies();
         this.SLEEP_PER_UPDATE_MILLIS = settings.getSleepPerUpdateMillis();
-        // TODO: Use thread pool in future. Single thread is for MVP to prevent complexity of thread
-        //  management
-        this.executor = Executors.newSingleThreadExecutor(r -> {
-            Thread t = new Thread(r, "simulation-thread");
-            t.setDaemon(true);
-            return t;
-        });
         initialize();
     }
 
@@ -96,12 +91,7 @@ public class Simulation {
 
     public void reset() {
         stop();
-        int i = 0;
-        while (this.generationNumber.get() != 0 || !this.speciesList.isEmpty()) {
-            sleepInterrupted();
-            initialize();
-            if (++i > 1000) break;
-        }
+        initialize();
     }
 
     public void shutdown() {
@@ -120,10 +110,10 @@ public class Simulation {
     private void update() {
         if (sleepInterrupted()) return;
         fitnessCalculation();
-        offspringsGeneration();
         this.snapShot = new SimulationSnapshotDto(
                 generationNumber.incrementAndGet(),
                 DataTransferUtilities.getDeepCopyOf(speciesList));
+        offspringsGeneration();
     }
 
     private boolean sleepInterrupted() {
@@ -153,8 +143,9 @@ public class Simulation {
             for (int i = 0; i < SPECIMENS_PER_SPECIES; i++) {
                 var candidate1 = genomes.get(random.nextInt(SPECIMENS_PER_SPECIES));
                 var candidate2 = genomes.get(random.nextInt(SPECIMENS_PER_SPECIES));
-                var winner = candidate1.getFitness() > candidate2.getFitness() ?
-                        candidate1 : candidate2;
+                var winner = candidate1.getFitness() > candidate2.getFitness()
+                        ? candidate1
+                        : candidate2;
                 offspringsGenomes.add(new Genome(winner));
             }
             var offspringsSpecies = new Species(offspringsGenomes);
