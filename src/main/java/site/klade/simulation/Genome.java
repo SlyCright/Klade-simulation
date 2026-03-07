@@ -11,7 +11,7 @@ public class Genome {
 
     public static final float START_POSITION_MUTATION_RATE = 0.1f;
 
-    public static final float INITIAL_IMPULSE_MUTATION_RATE = 1f;
+    public static final float INITIAL_IMPULSE_MUTATION_RATE = 5f;
 
     private final Vector2 startPosition = new Vector2();
 

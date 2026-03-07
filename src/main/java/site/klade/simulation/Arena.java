@@ -2,7 +2,6 @@ package site.klade.simulation;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.math.Vector2;
 // import static site.klade.simulation.Genome.MIN_INITIAL_DISTANCE;
 
 public class Arena {
@@ -14,17 +13,16 @@ public class Arena {
     private final Engine engine = new Engine();
 
     private final Entity specimen = new Entity();
-    // private final SpecimenPhysics specimenPhysics;
 
-    private final Vector2 center = new Vector2(0f, 0f);
+    private final Kinematics kinematics;
 
     private float fitness;
 
     public Arena(
             // Genome genome
     ) {
-        var specimenPhysics = new Kinematics(new Genome());
-        specimen.add(specimenPhysics);
+        kinematics = new Kinematics(new Genome());
+        specimen.add(kinematics);
         engine.addEntity(specimen);
         engine.addSystem(new Movement());
         engine.addSystem(new Friction());
