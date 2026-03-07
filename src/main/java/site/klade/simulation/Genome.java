@@ -13,7 +13,7 @@ public class Genome {
 
     public static final float INITIAL_IMPULSE_MUTATION_RATE = 1f;
 
-    private final Vector2 startPositon = new Vector2();
+    private final Vector2 startPosition = new Vector2();
 
     private final Vector2 initialImpulse = new Vector2();
 
@@ -25,7 +25,7 @@ public class Genome {
         float angle = (float) (Math.random() * 2 * Math.PI);
         float x = (float) (Math.cos(angle) * distance);
         float y = (float) (Math.sin(angle) * distance);
-        startPositon.set(x, y);
+        startPosition.set(x, y);
         initialImpulse.set(
                 (float) (Math.random() - 0.5) * INITIAL_IMPULSE_MUTATION_RATE,
                 (float) (Math.random() - 0.5) * INITIAL_IMPULSE_MUTATION_RATE);
@@ -33,7 +33,7 @@ public class Genome {
     }
 
     public Genome(Genome genome) {
-        this.startPositon.set(genome.getStartPositon());
+        this.startPosition.set(genome.getStartPosition());
         this.initialImpulse.set(genome.getInitialImpulse());
         fitness = genome.getFitness();
     }
@@ -42,8 +42,8 @@ public class Genome {
         return new Genome(genome).mutate();
     }
 
-    public Vector2 getStartPositon() {
-        return this.startPositon;
+    public Vector2 getStartPosition() {
+        return this.startPosition;
     }
 
     public Vector2 getInitialImpulse() {
@@ -59,13 +59,13 @@ public class Genome {
     }
 
     public String toString() {
-        return "Genome(startPositon=" + this.getStartPositon() +
+        return "Genome(startPositon=" + this.getStartPosition() +
                 ", initialImpulse=" + this.getInitialImpulse() +
                 ", fitness=" + this.getFitness() + ")";
     }
 
     private Genome mutate() {
-        startPositon.add(
+        startPosition.add(
                 new Vector2(
                         (float) (Math.random() - 0.5) * START_POSITION_MUTATION_RATE,
                         (float) (Math.random() - 0.5) * START_POSITION_MUTATION_RATE));

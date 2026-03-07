@@ -3,18 +3,18 @@ package site.klade.simulation;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.math.Vector2;
 
-public class SpecimenPhysics implements Component {
+public class Kinematics implements Component {
 
     private final Vector2 acceleration;
 
     private final Vector2 velocity;
 
-    private final Vector2 positon;
+    private final Vector2 position;
 
-    public SpecimenPhysics(Genome genome) {
+    public Kinematics(Genome genome) {
         this.acceleration = genome.getInitialImpulse();
         this.velocity = new Vector2(0f, 0f);
-        this.positon = genome.getStartPositon();
+        this.position = genome.getStartPosition();
     }
 
     public Vector2 getAcceleration() {
@@ -25,7 +25,7 @@ public class SpecimenPhysics implements Component {
         return this.velocity;
     }
 
-    public Vector2 getPositon() {
-        return this.positon;
+    public Vector2 getPosition() {
+        return this.position;
     }
 }

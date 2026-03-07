@@ -23,11 +23,11 @@ public class Arena {
     public Arena(
             // Genome genome
     ) {
-        var specimenPhysics = new SpecimenPhysics(new Genome());
+        var specimenPhysics = new Kinematics(new Genome());
         specimen.add(specimenPhysics);
         engine.addEntity(specimen);
-        // engine.addSystem(new Movement());
-        // engine.addSystem(new Friction());
+        engine.addSystem(new Movement());
+        engine.addSystem(new Friction());
         // this.genome = genome;
     }
 
