@@ -2,13 +2,16 @@ package site.klade.simulation;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-// import static site.klade.simulation.Genome.MIN_INITIAL_DISTANCE;
+import com.badlogic.gdx.math.Vector2;
+
+import static site.klade.simulation.Genome.MIN_INITIAL_DISTANCE;
 
 public class Arena {
 
     // TODO: that's simulation setting. Should be moved there
     public static final float DISTANCE_TOLERANCE = 0.001f;
-    // private final Genome genome;
+
+    private final Genome genome;
 
     private final Engine engine = new Engine();
 
@@ -16,13 +19,11 @@ public class Arena {
 
     private final Kinematics kinematics;
 
-    private final Genome genome;
-
-    private float fitness;
+    private final Vector2 center = new Vector2();
 
     public Arena(Genome genome) {
         this.genome = genome;
-        kinematics = new Kinematics(new Genome());
+        kinematics = new Kinematics(genome);
         specimen.add(kinematics);
         engine.addEntity(specimen);
         engine.addSystem(new Movement());
@@ -30,21 +31,21 @@ public class Arena {
     }
 
     public void run() {
-        // float distanceFromCenter = center.dst(genome.getStartPositon());
-        // if (distanceFromCenter < MIN_INITIAL_DISTANCE) {
-        //     fitness = Float.MAX_VALUE;
-        //     genome.setFitness(fitness);
-        //     return;
-        // }
-        // var positionBefore = new Vector2(10_000f, 10_000f);
-        // var positionAfter = new Vector2();
-        // while (positionBefore.dst(positionAfter) > DISTANCE_TOLERANCE) {
-        //     positionBefore.set(positionAfter);
-        //     engine.update(0f);
-        //     positionAfter.set(specimenPhysics.getPositon());
-        //     this.fitness = center.dst(positionAfter);
-        // }
-        // genome.setFitness(fitness);
+        float fitness = Float.MAX_VALUE;
+        float distanceFromCenter = center.dst(genome.getStartPosition());
+        if (distanceFromCenter < MIN_INITIAL_DISTANCE) {
+            genome.setFitness(fitness);
+            return;
+        }
+        var positionBefore = new Vector2(Float.MAX_VALUE, Float.MAX_VALUE);
+        var positionAfter = new Vector2();
+        while (positionBefore.dst(positionAfter) > DISTANCE_TOLERANCE) {
+            positionBefore.set(positionAfter);
+            engine.update(0f);
+            positionAfter.set(kinematics.getPosition());
+            fitness = center.dst(positionAfter);
+        }
+        genome.setFitness(fitness);
     }
 
     @SuppressWarnings("unused")
