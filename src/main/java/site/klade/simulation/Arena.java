@@ -16,17 +16,17 @@ public class Arena {
 
     private final Kinematics kinematics;
 
+    private final Genome genome;
+
     private float fitness;
 
-    public Arena(
-            // Genome genome
-    ) {
+    public Arena(Genome genome) {
+        this.genome = genome;
         kinematics = new Kinematics(new Genome());
         specimen.add(kinematics);
         engine.addEntity(specimen);
         engine.addSystem(new Movement());
         engine.addSystem(new Friction());
-        // this.genome = genome;
     }
 
     public void run() {
