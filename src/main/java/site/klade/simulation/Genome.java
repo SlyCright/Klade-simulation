@@ -11,7 +11,9 @@ public class Genome {
 
     public static final float START_POSITION_MUTATION_RATE = 0.1f;
 
-    public static final float INITIAL_IMPULSE_MUTATION_RATE = 5f;
+    public static final float INITIAL_IMPULSE_RANGE = 5f;
+
+    public static final float IMPULSE_MUTATION_RATE = 0.3f;
 
     private final Vector2 startPosition = new Vector2();
 
@@ -27,9 +29,9 @@ public class Genome {
         float y = (float) (Math.sin(angle) * distance);
         startPosition.set(x, y);
         initialImpulse.set(
-                (float) (Math.random() - 0.5) * INITIAL_IMPULSE_MUTATION_RATE,
-                (float) (Math.random() - 0.5) * INITIAL_IMPULSE_MUTATION_RATE);
-        fitness = 0f;
+                (float) (Math.random() - 0.5) * INITIAL_IMPULSE_RANGE,
+                (float) (Math.random() - 0.5) * INITIAL_IMPULSE_RANGE);
+        fitness = Float.MAX_VALUE;
     }
 
     public Genome(Genome genome) {
@@ -38,7 +40,7 @@ public class Genome {
         fitness = genome.getFitness();
     }
 
-    public static Genome getMutatedZeroFitnessCopyOf(Genome genome) {
+    public static Genome getMutatedAndFitnessMaxedCopyOf(Genome genome) {
         return new Genome(genome).mutate();
     }
 
@@ -71,9 +73,9 @@ public class Genome {
                         (float) (Math.random() - 0.5) * START_POSITION_MUTATION_RATE));
         initialImpulse.add(
                 new Vector2(
-                        (float) (Math.random() - 0.5) * INITIAL_IMPULSE_MUTATION_RATE,
-                        (float) (Math.random() - 0.5) * INITIAL_IMPULSE_MUTATION_RATE));
-        fitness = 0f;
+                        (float) (Math.random() - 0.5) * IMPULSE_MUTATION_RATE,
+                        (float) (Math.random() - 0.5) * IMPULSE_MUTATION_RATE));
+        fitness = Float.MAX_VALUE;
         return this;
     }
 }

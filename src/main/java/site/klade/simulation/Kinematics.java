@@ -12,9 +12,9 @@ public class Kinematics implements Component {
     private final Vector2 position;
 
     public Kinematics(Genome genome) {
-        this.acceleration = genome.getInitialImpulse();
+        this.acceleration = new Vector2(genome.getInitialImpulse());
         this.velocity = new Vector2(0f, 0f);
-        this.position = genome.getStartPosition();
+        this.position = new Vector2(genome.getStartPosition());
     }
 
     public Vector2 getAcceleration() {
