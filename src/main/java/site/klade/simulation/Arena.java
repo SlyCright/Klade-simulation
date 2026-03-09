@@ -9,7 +9,7 @@ import static site.klade.simulation.Genome.MIN_INITIAL_DISTANCE;
 public class Arena {
 
     // TODO: that's simulation setting. Should be moved there
-    public static final float DISTANCE_TOLERANCE = 0.001f;
+    public static final float DISTANCE_TOLERANCE = 0.1f;
 
     private final Genome genome;
 

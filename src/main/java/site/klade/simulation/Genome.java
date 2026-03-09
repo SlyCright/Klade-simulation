@@ -40,6 +40,12 @@ public class Genome {
         fitness = genome.getFitness();
     }
 
+    public Genome(float startX, float startY, float impulseX, float impulseY) {
+        this.startPosition.set(startX, startY);
+        this.initialImpulse.set(impulseX, impulseY);
+        this.fitness = Float.MAX_VALUE;
+    }
+
     public static Genome getMutatedAndFitnessMaxedCopyOf(Genome genome) {
         return new Genome(genome).mutate();
     }
