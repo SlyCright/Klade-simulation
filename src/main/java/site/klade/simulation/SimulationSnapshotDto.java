@@ -4,9 +4,13 @@ import java.util.ArrayList;
 
 public class SimulationSnapshotDto {
 
-    private final int generationNumber;
+    private int generationNumber;
 
-    private final ArrayList<Species> speciesList;
+    private ArrayList<Species> speciesList;
+
+    // Add no-arg constructor for Jackson
+    public SimulationSnapshotDto() {
+    }
 
     public SimulationSnapshotDto(int generationNumber, ArrayList<Species> speciesList) {
         this.generationNumber = generationNumber;

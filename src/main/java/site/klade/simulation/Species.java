@@ -4,7 +4,11 @@ import java.util.ArrayList;
 
 public class Species {
 
-    private final ArrayList<Genome> genomes = new ArrayList<>();
+    private  ArrayList<Genome> genomes = new ArrayList<>();
+
+    public Species() {
+        this.genomes = new ArrayList<>();
+    }
 
     public Species(int specimensPerSpecies) {
         for (int i = 0; i < specimensPerSpecies; i++) {
