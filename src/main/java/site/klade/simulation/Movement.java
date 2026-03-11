@@ -18,12 +18,14 @@ public class Movement extends EntitySystem {
     public void update(float deltaTime) {
         ImmutableArray<Entity> entities = getEngine().getEntitiesFor(family);
         for (Entity entity : entities) {
-            var physics = entity.getComponent(Kinematics.class);
-            Vector2 acceleration = physics.getAcceleration();
-            Vector2 velocity = physics.getVelocity();
+            var toleranceComponent = entity.getComponent(ToleranceComponent.class);
+            if (toleranceComponent.isToleranceReached()) continue;
+            var kinematics = entity.getComponent(Kinematics.class);
+            Vector2 acceleration = kinematics.getAcceleration();
+            Vector2 velocity = kinematics.getVelocity();
             velocity.add(acceleration);
-            physics.getPosition().add(velocity);
-            physics.getAcceleration().set(0f, 0f);
+            kinematics.getPosition().add(velocity);
+            kinematics.getAcceleration().set(0f, 0f);
         }
     }
 }
