@@ -1,7 +1,8 @@
-package site.klade.simulation;
+package site.klade.simulation.components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.math.Vector2;
+import site.klade.simulation.Genome;
 
 public class Kinematics implements Component {
 

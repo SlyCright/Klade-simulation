@@ -4,6 +4,10 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import site.klade.simulation.components.FitnessComponent;
+import site.klade.simulation.components.Kinematics;
+import site.klade.simulation.components.ToleranceComponent;
+import site.klade.simulation.systems.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +33,12 @@ public class Arena {
                         .add(new ToleranceComponent())
                         .add(new FitnessComponent())));
         specimens.forEach(engine::addEntity);
-        engine.addSystem(new Friction()); // 10
-        engine.addSystem(new Movement()); // 20
-        engine.addSystem(new ToleranceCalculation()); // 30
-        engine.addSystem(new FitnessCalculation()); // 100
+        engine.addSystem(new ToleranceExclusion());     // 5
+        engine.addSystem(new Friction());               // 10
+        engine.addSystem(new ElasticCollision());       // 15
+        engine.addSystem(new Movement());               // 20
+        engine.addSystem(new ToleranceCalculation());   // 30
+        engine.addSystem(new FitnessCalculation());     // 100
         checkInitialDistanceFromCenter();
     }
 

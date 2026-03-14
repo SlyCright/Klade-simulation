@@ -1,4 +1,4 @@
-package site.klade.simulation;
+package site.klade.simulation.components;
 
 import com.badlogic.ashley.core.Component;
 

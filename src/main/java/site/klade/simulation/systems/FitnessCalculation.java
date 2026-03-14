@@ -1,9 +1,11 @@
-package site.klade.simulation;
+package site.klade.simulation.systems;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
+import site.klade.simulation.components.FitnessComponent;
+import site.klade.simulation.components.Kinematics;
 
 public class FitnessCalculation extends EntitySystem {
 

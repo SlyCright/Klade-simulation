@@ -5,6 +5,8 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import site.klade.simulation.components.Kinematics;
+import site.klade.simulation.systems.Movement;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

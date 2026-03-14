@@ -1,10 +1,12 @@
-package site.klade.simulation;
+package site.klade.simulation.systems;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector2;
+import site.klade.simulation.components.ToleranceComponent;
+import site.klade.simulation.components.Kinematics;
 
 public class Movement extends EntitySystem {
 
