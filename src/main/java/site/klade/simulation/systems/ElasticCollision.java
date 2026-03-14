@@ -10,7 +10,7 @@ import site.klade.simulation.components.Kinematics;
 public class ElasticCollision extends EntitySystem {
 
     // TODO: that's simulation setting. Should move there.
-    //  Also it should determines how the Specimen renderer from "Stage" represent specimen works
+    //  Also it should determines how the Specimen Renderer from "Stage" represents a specimen
     public static final float SPECIMEN_SIZE = 18f;
 
     private final Family family = Family.all(Kinematics.class).get();
@@ -31,7 +31,8 @@ public class ElasticCollision extends EntitySystem {
             for (int j = i + 1; j < entities.size(); j++) {
                 MotionVectors vectorsJ = extractEntityData(entities.get(j));
                 float distance = vectorsI.position.dst(vectorsJ.position);
-                if (distance < SPECIMEN_SIZE && distance > 0) handleCollision(vectorsI, vectorsJ);
+                if (distance > SPECIMEN_SIZE) continue;
+                if (distance > 0) handleCollision(vectorsI, vectorsJ);
             }
         }
     }
