@@ -3,7 +3,7 @@ package site.klade.simulation.components;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.math.Vector2;
 
-public class ToleranceComponent implements Component {
+public class Tolerance implements Component {
 
     private final Vector2 previousPosition = new Vector2(Float.MAX_VALUE, Float.MAX_VALUE);
 

@@ -2,7 +2,7 @@ package site.klade.simulation.components;
 
 import com.badlogic.ashley.core.Component;
 
-public class FitnessComponent implements Component {
+public class Fitness implements Component {
 
     float fitness = Float.MAX_VALUE;
 
