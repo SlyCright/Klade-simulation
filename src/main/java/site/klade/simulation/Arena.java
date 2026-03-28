@@ -4,7 +4,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import site.klade.simulation.components.Fitness;
+import site.klade.simulation.components.GenomeWrap;
 import site.klade.simulation.components.Kinematics;
 import site.klade.simulation.components.ToleranceStatus;
 import site.klade.simulation.systems.*;
@@ -33,7 +33,7 @@ public class Arena {
                                 genome.getInitialImpulse(),
                                 genome.getStartPosition()))
                         .add(new ToleranceStatus())
-                        .add(new Fitness())));
+                        .add(new GenomeWrap(genome))));
         specimens.forEach(engine::addEntity);
         engine.addSystem(new ToleranceExclusion());     // 5
         engine.addSystem(new Friction());               // 10
@@ -84,7 +84,7 @@ public class Arena {
     private void checkInitialDistanceFromCenter() {
         Family family = Family.all(
                 Kinematics.class,
-                Fitness.class,
+                GenomeWrap.class,
                 ToleranceStatus.class
         ).get();
         ImmutableArray<Entity> entities = engine.getEntitiesFor(family);
@@ -93,7 +93,7 @@ public class Arena {
             float initialDistanceFromCenter = kinematics.getPosition().dst(0f, 0f);
             if (initialDistanceFromCenter < MIN_INITIAL_DISTANCE) {
                 entity.getComponent(ToleranceStatus.class).setToleranceReached(true);
-                entity.getComponent(Fitness.class).set(Float.MAX_VALUE);
+                entity.getComponent(GenomeWrap.class).setFitness(Float.MAX_VALUE);
             }
         }
     }
