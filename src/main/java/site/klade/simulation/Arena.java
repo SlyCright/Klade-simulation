@@ -29,7 +29,9 @@ public class Arena {
     public Arena(ArrayList<Genome> genomes) {
         genomes.forEach(genome ->
                 specimens.add(new Entity()
-                        .add(new Kinematics(genome))
+                        .add(new Kinematics(
+                                genome.getInitialImpulse(),
+                                genome.getStartPosition()))
                         .add(new ToleranceStatus())
                         .add(new Fitness())));
         specimens.forEach(engine::addEntity);
@@ -50,10 +52,12 @@ public class Arena {
         return evaluationComplete;
     }
 
+    // that's for background simulation in Web-app
     public void run() {
         while (shouldContinueSimulation()) executeTick();
     }
 
+    // that's for visualization in Stage
     public void update() {
         if (!shouldContinueSimulation()) return;
         executeTick();
