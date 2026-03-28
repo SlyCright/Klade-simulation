@@ -6,7 +6,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import site.klade.simulation.components.Fitness;
 import site.klade.simulation.components.Kinematics;
-import site.klade.simulation.components.Tolerance;
+import site.klade.simulation.components.ToleranceStatus;
 import site.klade.simulation.systems.*;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class Arena {
         genomes.forEach(genome ->
                 specimens.add(new Entity()
                         .add(new Kinematics(genome))
-                        .add(new Tolerance())
+                        .add(new ToleranceStatus())
                         .add(new Fitness())));
         specimens.forEach(engine::addEntity);
         engine.addSystem(new ToleranceExclusion());     // 5
@@ -40,6 +40,10 @@ public class Arena {
         engine.addSystem(new ToleranceCalculation());   // 30
         engine.addSystem(new FitnessCalculation());     // 100
         checkInitialDistanceFromCenter();
+    }
+
+    public ArrayList<Entity> getSpecimens() {
+        return specimens;
     }
 
     public boolean isEvaluationComplete() {
@@ -57,11 +61,11 @@ public class Arena {
 
     private boolean shouldContinueSimulation() {
         if (evaluationComplete) return false;
-        Family family = Family.all(Tolerance.class).get();
+        Family family = Family.all(ToleranceStatus.class).get();
         ImmutableArray<Entity> entities = engine.getEntitiesFor(family);
         boolean allReachedTolerance = true;
         for (Entity entity : entities) {
-            if (entity.getComponent(Tolerance.class).isToleranceReached()) continue;
+            if (entity.getComponent(ToleranceStatus.class).isToleranceReached()) continue;
             allReachedTolerance = false;
             break;
         }
@@ -77,14 +81,14 @@ public class Arena {
         Family family = Family.all(
                 Kinematics.class,
                 Fitness.class,
-                Tolerance.class
+                ToleranceStatus.class
         ).get();
         ImmutableArray<Entity> entities = engine.getEntitiesFor(family);
         for (Entity entity : entities) {
             var kinematics = entity.getComponent(Kinematics.class);
             float initialDistanceFromCenter = kinematics.getPosition().dst(0f, 0f);
             if (initialDistanceFromCenter < MIN_INITIAL_DISTANCE) {
-                entity.getComponent(Tolerance.class).setToleranceReached(true);
+                entity.getComponent(ToleranceStatus.class).setToleranceReached(true);
                 entity.getComponent(Fitness.class).set(Float.MAX_VALUE);
             }
         }

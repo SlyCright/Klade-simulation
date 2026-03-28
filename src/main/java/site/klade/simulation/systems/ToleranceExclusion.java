@@ -5,11 +5,11 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import site.klade.simulation.components.Kinematics;
-import site.klade.simulation.components.Tolerance;
+import site.klade.simulation.components.ToleranceStatus;
 
 public class ToleranceExclusion extends EntitySystem {
 
-    private final Family family = Family.all(Kinematics.class, Tolerance.class).get();
+    private final Family family = Family.all(Kinematics.class, ToleranceStatus.class).get();
 
     public ToleranceExclusion() {
         super(5);
@@ -20,7 +20,7 @@ public class ToleranceExclusion extends EntitySystem {
         ImmutableArray<Entity> entities = getEngine().getEntitiesFor(family);
         
         for (Entity entity : entities) {
-            var toleranceComponent = entity.getComponent(Tolerance.class);
+            var toleranceComponent = entity.getComponent(ToleranceStatus.class);
             var kinematics = entity.getComponent(Kinematics.class);
             
             if (toleranceComponent.isToleranceReached()) {
