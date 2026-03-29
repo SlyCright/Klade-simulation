@@ -20,9 +20,9 @@ public class FitnessCalculation extends EntitySystem {
         ImmutableArray<Entity> entities = getEngine().getEntitiesFor(family);
         for (Entity entity : entities) {
             var kinematics = entity.getComponent(Kinematics.class);
-            var fitness = entity.getComponent(GenomeWrap.class);
+            var genomeWrap = entity.getComponent(GenomeWrap.class);
             var position = kinematics.getPosition();
-            fitness.setFitness(position.dst(0f, 0f));
+            genomeWrap.setFitness(position.dst(0f, 0f));
         }
     }
 }
