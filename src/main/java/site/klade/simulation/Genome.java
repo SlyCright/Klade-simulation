@@ -19,7 +19,7 @@ public class Genome {
 
     private final Vector2 initialImpulse = new Vector2();
 
-    private float fitness;
+    private float fitness = Float.MAX_VALUE;
 
     public Genome() {
         float distance = (float) (Math.random() *
@@ -31,13 +31,12 @@ public class Genome {
         initialImpulse.set(
                 (float) (Math.random() - 0.5) * INITIAL_IMPULSE_RANGE,
                 (float) (Math.random() - 0.5) * INITIAL_IMPULSE_RANGE);
-        fitness = Float.MAX_VALUE;
     }
 
     public Genome(Genome genome) {
         this.startPosition.set(genome.getStartPosition());
         this.initialImpulse.set(genome.getInitialImpulse());
-        fitness = genome.getFitness();
+        this.fitness = genome.getFitness();
     }
 
     public Genome(float startX, float startY, float impulseX, float impulseY) {
@@ -46,8 +45,10 @@ public class Genome {
         this.fitness = Float.MAX_VALUE;
     }
 
-    public static Genome getMutatedAndFitnessMaxedCopyOf(Genome genome) {
-        return new Genome(genome).mutate();
+    public static Genome getOffspringOf(Genome genome) {
+        var offspring = new Genome(genome).mutate();
+        offspring.setFitness(Float.MAX_VALUE);
+        return offspring;
     }
 
     public Vector2 getStartPosition() {
@@ -81,7 +82,6 @@ public class Genome {
                 new Vector2(
                         (float) (Math.random() - 0.5) * IMPULSE_MUTATION_RATE,
                         (float) (Math.random() - 0.5) * IMPULSE_MUTATION_RATE));
-        fitness = Float.MAX_VALUE;
         return this;
     }
 }

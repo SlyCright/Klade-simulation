@@ -15,7 +15,7 @@ class GenomeTest {
             // Given: a parent genome with initial values
             Genome parent = new Genome();
             // When: getting offspring
-            Genome offspring = Genome.getMutatedAndFitnessMaxedCopyOf(parent);
+            Genome offspring = Genome.getOffspringOf(parent);
             // Then: offspring is a new instance with fitness 0 and mutated positions within mutation radius
             assertThat(offspring).isNotSameAs(parent);
             assertThat(offspring.getFitness()).isEqualTo(Float.MAX_VALUE);
