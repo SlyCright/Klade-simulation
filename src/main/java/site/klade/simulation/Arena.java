@@ -37,7 +37,7 @@ public class Arena {
         specimens.forEach(engine::addEntity);
         engine.addSystem(new ToleranceExclusion());     // 5
         engine.addSystem(new Friction());               // 10
-        engine.addSystem(new ElasticCollision());       // 15
+        engine.addSystem(new Collision());       // 15
         engine.addSystem(new Movement());               // 20
         engine.addSystem(new ToleranceCalculation());   // 30
         engine.addSystem(new FitnessCalculation());     // 100

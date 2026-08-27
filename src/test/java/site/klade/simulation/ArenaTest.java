@@ -4,6 +4,8 @@ import com.badlogic.ashley.core.Entity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ArenaTest {
@@ -18,8 +20,8 @@ public class ArenaTest {
         Arena arena = new Arena(genome);
 
         // Then
-        assertThat(arena.getSpecimen()).isNotNull();
-        assertThat(arena.getSpecimen()).isInstanceOf(Entity.class);
+        assertThat(arena.getSpecimens()).isNotNull();
+        assertThat(arena.getSpecimens().get(0)).isInstanceOf(Entity.class);
     }
 
     @Test
@@ -49,7 +51,7 @@ public class ArenaTest {
 
         // Then
         // Since we can't directly test private state, we verify the method completes without error
-        assertThat(arena.getSpecimen()).isNotNull();
+        assertThat(arena.getSpecimens()).isNotNull();
     }
 
     @Test
@@ -60,11 +62,11 @@ public class ArenaTest {
         Arena arena = new Arena(genome);
 
         // When
-        Entity specimen = arena.getSpecimen();
+        ArrayList<Entity> specimens = arena.getSpecimens();
 
         // Then
-        assertThat(specimen).isNotNull();
-        assertThat(specimen).isInstanceOf(Entity.class);
+        assertThat(specimens).isNotNull();
+        assertThat(specimens.get(0)).isInstanceOf(Entity.class);
     }
 
     @Test

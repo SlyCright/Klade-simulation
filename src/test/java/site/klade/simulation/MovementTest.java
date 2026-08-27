@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import site.klade.simulation.components.Kinematics;
+import site.klade.simulation.components.ToleranceStatus;
 import site.klade.simulation.systems.Movement;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,20 +23,22 @@ public class MovementTest {
         // Entity 1
         Entity entity1 = new Entity();
         Genome genome1 = new Genome();
-        Kinematics kinematics1 = new Kinematics(genome1);
+        Kinematics kinematics1 = new Kinematics();
         kinematics1.getVelocity().set(1f, 0f);
         kinematics1.getPosition().set(0f, 0f);
         kinematics1.getAcceleration().set(1f, 0f);
         entity1.add(kinematics1);
+        entity1.add(new ToleranceStatus());
         engine.addEntity(entity1);
         // Entity 2
         Entity entity2 = new Entity();
         Genome genome2 = new Genome();
-        Kinematics kinematics2 = new Kinematics(genome2);
+        Kinematics kinematics2 = new Kinematics();
         kinematics2.getVelocity().set(0f, 1f);
         kinematics2.getPosition().set(5f, 5f);
         kinematics2.getAcceleration().set(0f, 1f);
         entity2.add(kinematics2);
+        entity2.add(new ToleranceStatus());
         engine.addEntity(entity2);
         // When
         engine.update(1f);

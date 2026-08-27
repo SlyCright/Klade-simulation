@@ -21,7 +21,7 @@ public class Movement extends EntitySystem {
         ImmutableArray<Entity> entities = getEngine().getEntitiesFor(family);
         for (Entity entity : entities) {
             var toleranceComponent = entity.getComponent(ToleranceStatus.class);
-            if (toleranceComponent.isToleranceReached()) continue;
+            if (toleranceComponent != null && toleranceComponent.isToleranceReached()) continue;
             var kinematics = entity.getComponent(Kinematics.class);
             Vector2 acceleration = kinematics.getAcceleration();
             Vector2 velocity = kinematics.getVelocity();

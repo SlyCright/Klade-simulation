@@ -19,7 +19,7 @@ public class FrictionTest {
         engine.addSystem(friction);
         Entity entity = new Entity();
         Genome genome = new Genome();
-        Kinematics kinematics = new Kinematics(genome);
+        Kinematics kinematics = new Kinematics();
         kinematics.getVelocity().set(10f, 20f);
         kinematics.getAcceleration().set(1f, 2f);
         entity.add(kinematics);
