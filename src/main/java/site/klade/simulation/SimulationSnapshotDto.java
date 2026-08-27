@@ -26,6 +26,6 @@ public class SimulationSnapshotDto {
     }
 
     public String toString() {
-        return "SimulationSnapshotDto(generationNumber=" + this.getGenerationNumber() + ", speciesList=" + this.getSpeciesList() + ")";
+        return "G" + this.generationNumber + ":" + (this.speciesList != null ? this.speciesList.size() : 0);
     }
 }
