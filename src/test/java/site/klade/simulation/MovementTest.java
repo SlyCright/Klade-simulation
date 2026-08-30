@@ -18,7 +18,7 @@ public class MovementTest {
     void givenMultipleEntities_whenUpdateIsCalled_thenAllEntitiesAreMovedAccordingly() {
         // Given
         Engine engine = new Engine();
-        Movement movement = new Movement();
+        Movement movement = new Movement(20);
         engine.addSystem(movement);
         // Entity 1
         Entity entity1 = new Entity();

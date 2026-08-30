@@ -11,8 +11,8 @@ public class ToleranceExclusion extends EntitySystem {
 
     private final Family family = Family.all(Kinematics.class, ToleranceStatus.class).get();
 
-    public ToleranceExclusion() {
-        super(5);
+    public ToleranceExclusion(int priority) {
+        super(priority);
     }
 
     @Override

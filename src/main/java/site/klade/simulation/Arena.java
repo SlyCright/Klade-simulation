@@ -4,46 +4,50 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import site.klade.simulation.components.GenomeWrap;
-import site.klade.simulation.components.Kinematics;
-import site.klade.simulation.components.ToleranceStatus;
+import site.klade.simulation.components.*;
 import site.klade.simulation.systems.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Arena {
 
     private final Engine engine = new Engine();
+    private final IdEngine idEngine = new IdEngine();
 
-    private final ArrayList<Entity> specimens = new ArrayList<>();
 
     private boolean evaluationComplete = false;
 
-    public Arena(Genome genome) {
-        this(new ArrayList<>(List.of(genome)));
-    }
-
     public Arena(ArrayList<Genome> genomes) {
-//        genomes.forEach(genome ->
-//                specimens.add(new Entity()
-//                        .add(new Kinematics(
-//                                genome.getInitialImpulse(),
-//                                genome.getStartPosition()))
-//                        .add(new ToleranceStatus())
-//                        .add(new GenomeWrap(genome))));
-//        specimens.forEach(engine::addEntity);
-        engine.addSystem(new ToleranceExclusion());     // 5
-        engine.addSystem(new Friction());               // 10
-        engine.addSystem(new Collision());       // 15
-        engine.addSystem(new Movement());               // 20
-        engine.addSystem(new ToleranceCalculation());   // 30
-        engine.addSystem(new FitnessCalculation());     // 100
+        for (Genome genome : genomes) {
+            //--- Create specimen entity
+            Entity specimenEntity = engine.createEntity();
+            idEngine.registerEntity(specimenEntity);
+            specimenEntity.add(new GenomeWrap(genome));
+            EntityId specimenId = new EntityId();
+            specimenId.id = idEngine.getIdByEntity(specimenEntity);
+            specimenEntity.add(specimenId);
+            specimenEntity.add(new Specimen());
+            //--- Create stem node entity
+            Entity stemNode = engine.createEntity();
+            idEngine.registerEntity(stemNode);
+            EntityId stemNodeId = new EntityId();
+            stemNodeId.id = idEngine.getIdByEntity(stemNode);
+            stemNode.add(stemNodeId);
+            Node nodeComponent = new Node();
+            nodeComponent.specimenId = specimenId.id;
+            stemNode.add(nodeComponent);
+            stemNode.add(new Kinematics());
+            //--- Add entities to engine
+            engine.addEntity(specimenEntity);
+            engine.addEntity(stemNode);
+        }
+        engine.addSystem(new ToleranceExclusion(10));
+        engine.addSystem(new Friction(20));
+        engine.addSystem(new Collision(30));
+        engine.addSystem(new Movement(40));
+        engine.addSystem(new ToleranceCalculation(50));
+        engine.addSystem(new FitnessCalculation(100));
         checkInitialDistanceFromCenter();
-    }
-
-    public ArrayList<Entity> getSpecimens() {
-        return specimens;
     }
 
     public boolean isEvaluationComplete() {

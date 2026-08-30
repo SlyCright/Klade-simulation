@@ -17,9 +17,9 @@ public class CollisionTest {
     void givenTwoEntitiesColliding_whenUpdateIsCalled_thenVelocitiesChange() {
         // Given
         Engine engine = new Engine();
-        Collision collision = new Collision();
+        Collision collision = new Collision(15);
         engine.addSystem(collision);
-        engine.addSystem(new Movement());
+        engine.addSystem(new Movement(20));
 
         Entity entity1 = new Entity();
         Kinematics kinematics1 = new Kinematics();
@@ -51,9 +51,9 @@ public class CollisionTest {
     void givenTwoEntitiesOverlapped_whenUpdateIsCalled_thenTheyRepel() {
         // Given
         Engine engine = new Engine();
-        Collision collision = new Collision();
+        Collision collision = new Collision(15);
         engine.addSystem(collision);
-        engine.addSystem(new Movement());
+        engine.addSystem(new Movement(20));
 
         Entity entity1 = new Entity();
         Kinematics kinematics1 = new Kinematics();

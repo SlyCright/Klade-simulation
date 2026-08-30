@@ -12,8 +12,8 @@ public class Movement extends EntitySystem {
 
     private final Family family = Family.all(Kinematics.class).get();
 
-    public Movement() {
-        super(20);
+    public Movement(int priority) {
+        super(priority);
     }
 
     @Override

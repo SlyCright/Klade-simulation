@@ -23,8 +23,8 @@ public class Collision extends EntitySystem {
     private final Vector2 forceVectorI = new Vector2();
     private final Vector2 forceVectorJ = new Vector2();
 
-    public Collision() {
-        super(15);
+    public Collision(int priority) {
+        super(priority);
     }
 
     @Override

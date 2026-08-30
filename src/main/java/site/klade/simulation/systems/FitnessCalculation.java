@@ -11,8 +11,8 @@ public class FitnessCalculation extends EntitySystem {
 
     private final Family family = Family.all(Kinematics.class, GenomeWrap.class).get();
 
-    public FitnessCalculation() {
-        super(100);
+    public FitnessCalculation(int priority) {
+        super(priority);
     }
 
     @Override

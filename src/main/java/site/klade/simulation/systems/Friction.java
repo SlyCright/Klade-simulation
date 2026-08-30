@@ -16,8 +16,8 @@ public class Friction extends EntitySystem {
 
     private final Vector2 friction = new Vector2();
 
-    public Friction() {
-        super(10);
+    public Friction(int priority) {
+        super(priority);
     }
 
     @Override
