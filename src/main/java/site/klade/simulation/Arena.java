@@ -14,40 +14,56 @@ public class Arena {
     private final Engine engine = new Engine();
     private final IdEngine idEngine = new IdEngine();
 
-
     private boolean evaluationComplete = false;
 
     public Arena(ArrayList<Genome> genomes) {
         for (Genome genome : genomes) {
-            //--- Create specimen entity
-            Entity specimenEntity = engine.createEntity();
-            idEngine.registerEntity(specimenEntity);
-            specimenEntity.add(new GenomeWrap(genome));
-            EntityId specimenId = new EntityId();
-            specimenId.id = idEngine.getIdByEntity(specimenEntity);
-            specimenEntity.add(specimenId);
-            specimenEntity.add(new Specimen());
-            //--- Create stem node entity
-            Entity stemNode = engine.createEntity();
-            idEngine.registerEntity(stemNode);
-            EntityId stemNodeId = new EntityId();
-            stemNodeId.id = idEngine.getIdByEntity(stemNode);
-            stemNode.add(stemNodeId);
-            Node nodeComponent = new Node();
-            nodeComponent.specimenId = specimenId.id;
-            stemNode.add(nodeComponent);
-            stemNode.add(new Kinematics());
-            //--- Add entities to engine
+            Entity specimenEntity = createSpecimenEntity(genome);
+            EntityId specimenId = specimenEntity.getComponent(EntityId.class);
+            Entity stemNode = createStemNodeEntity(specimenId.id);
             engine.addEntity(specimenEntity);
             engine.addEntity(stemNode);
         }
+        addSystems();
+        checkInitialDistanceFromCenter();
+    }
+
+    private Entity createSpecimenEntity(Genome genome) {
+        Entity specimenEntity = engine.createEntity();
+        idEngine.registerEntity(specimenEntity);
+        specimenEntity.add(new GenomeWrap(genome));
+
+        EntityId specimenId = new EntityId();
+        specimenId.id = idEngine.getIdByEntity(specimenEntity);
+        specimenEntity.add(specimenId);
+        specimenEntity.add(new Specimen());
+
+        return specimenEntity;
+    }
+
+    private Entity createStemNodeEntity(int specimenId) {
+        Entity stemNode = engine.createEntity();
+        idEngine.registerEntity(stemNode);
+
+        EntityId stemNodeId = new EntityId();
+        stemNodeId.id = idEngine.getIdByEntity(stemNode);
+        stemNode.add(stemNodeId);
+
+        Node nodeComponent = new Node();
+        nodeComponent.specimenId = specimenId;
+        stemNode.add(nodeComponent);
+        stemNode.add(new Kinematics());
+
+        return stemNode;
+    }
+
+    private void addSystems() {
         engine.addSystem(new ToleranceExclusion(10));
         engine.addSystem(new Friction(20));
         engine.addSystem(new Collision(30));
         engine.addSystem(new Movement(40));
         engine.addSystem(new ToleranceCalculation(50));
         engine.addSystem(new FitnessCalculation(100));
-        checkInitialDistanceFromCenter();
     }
 
     public boolean isEvaluationComplete() {
