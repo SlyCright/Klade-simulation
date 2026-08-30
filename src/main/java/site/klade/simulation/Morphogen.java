@@ -1,0 +1,53 @@
+package site.klade.simulation;
+
+public class Morphogen {
+    private int id;
+    private float diffusionRatio;
+    private float decayRatio;
+    private String spreadingConditions;
+
+    public Morphogen(int id, float diffusionRatio, float decayRatio, String spreadingConditions) {
+        this.id = id;
+        this.diffusionRatio = diffusionRatio;
+        this.decayRatio = decayRatio;
+        this.spreadingConditions = spreadingConditions;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public float getDiffusionRatio() {
+        return diffusionRatio;
+    }
+
+    public void setDiffusionRatio(float diffusionRatio) {
+        this.diffusionRatio = diffusionRatio;
+    }
+
+    public float getDecayRatio() {
+        return decayRatio;
+    }
+
+    public void setDecayRatio(float decayRatio) {
+        this.decayRatio = decayRatio;
+    }
+
+    public String getSpreadingConditions() {
+        return spreadingConditions;
+    }
+
+    public void setSpreadingConditions(String spreadingConditions) {
+        this.spreadingConditions = spreadingConditions;
+    }
+
+    @Override
+    public String toString() {
+        return "Morphogen(id=" + id + ", diffusionRatio=" + diffusionRatio + 
+               ", decayRatio=" + decayRatio + ", spreadingConditions=" + spreadingConditions + ")";
+    }
+}

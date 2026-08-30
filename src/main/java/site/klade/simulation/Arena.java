@@ -12,8 +12,6 @@ import site.klade.simulation.systems.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static site.klade.simulation.Genome.MIN_INITIAL_DISTANCE;
-
 public class Arena {
 
     private final Engine engine = new Engine();
@@ -27,14 +25,14 @@ public class Arena {
     }
 
     public Arena(ArrayList<Genome> genomes) {
-        genomes.forEach(genome ->
-                specimens.add(new Entity()
-                        .add(new Kinematics(
-                                genome.getInitialImpulse(),
-                                genome.getStartPosition()))
-                        .add(new ToleranceStatus())
-                        .add(new GenomeWrap(genome))));
-        specimens.forEach(engine::addEntity);
+//        genomes.forEach(genome ->
+//                specimens.add(new Entity()
+//                        .add(new Kinematics(
+//                                genome.getInitialImpulse(),
+//                                genome.getStartPosition()))
+//                        .add(new ToleranceStatus())
+//                        .add(new GenomeWrap(genome))));
+//        specimens.forEach(engine::addEntity);
         engine.addSystem(new ToleranceExclusion());     // 5
         engine.addSystem(new Friction());               // 10
         engine.addSystem(new Collision());       // 15
@@ -88,13 +86,13 @@ public class Arena {
                 ToleranceStatus.class
         ).get();
         ImmutableArray<Entity> entities = engine.getEntitiesFor(family);
-        for (Entity entity : entities) {
-            var kinematics = entity.getComponent(Kinematics.class);
-            float initialDistanceFromCenter = kinematics.getPosition().dst(0f, 0f);
-            if (initialDistanceFromCenter < MIN_INITIAL_DISTANCE) {
-                entity.getComponent(ToleranceStatus.class).setToleranceReached(true);
-                entity.getComponent(GenomeWrap.class).setFitness(Float.MAX_VALUE);
-            }
-        }
+//        for (Entity entity : entities) {
+//            var kinematics = entity.getComponent(Kinematics.class);
+//            float initialDistanceFromCenter = kinematics.getPosition().dst(0f, 0f);
+//            if (initialDistanceFromCenter < MIN_INITIAL_DISTANCE) {
+//                entity.getComponent(ToleranceStatus.class).setToleranceReached(true);
+//                entity.getComponent(GenomeWrap.class).setFitness(Float.MAX_VALUE);
+//            }
+//        }
     }
 }

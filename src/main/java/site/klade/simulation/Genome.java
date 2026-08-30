@@ -1,87 +1,58 @@
 package site.klade.simulation;
 
-import com.badlogic.gdx.math.Vector2;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Genome {
-
-    // TODO: that's simulation settings. Should be moved there
-    public static final float MAX_INITIAL_DISTANCE = 200f;
-
-    public static final float MIN_INITIAL_DISTANCE = 150f;
-
-    public static final float START_POSITION_MUTATION_RATE = 0.1f;
-
-    public static final float INITIAL_IMPULSE_RANGE = 5f;
-
-    public static final float IMPULSE_MUTATION_RATE = 0.3f;
-
-    private final Vector2 startPosition = new Vector2();
-
-    private final Vector2 initialImpulse = new Vector2();
-
+    private List<MetaGene> metaGenes = new ArrayList<MetaGene>();
+    private List<Morphogen> morphogens = new ArrayList<Morphogen>();
+    private List<Gene> genes = new ArrayList<Gene>();
     private float fitness = Float.MAX_VALUE;
 
-    public Genome() {
-        float distance = (float) (Math.random() *
-                (MAX_INITIAL_DISTANCE - MIN_INITIAL_DISTANCE) + MIN_INITIAL_DISTANCE);
-        float angle = (float) (Math.random() * 2 * Math.PI);
-        float x = (float) (Math.cos(angle) * distance);
-        float y = (float) (Math.sin(angle) * distance);
-        startPosition.set(x, y);
-        initialImpulse.set(
-                (float) (Math.random() - 0.5) * INITIAL_IMPULSE_RANGE,
-                (float) (Math.random() - 0.5) * INITIAL_IMPULSE_RANGE);
+    public Genome(List<MetaGene> metaGenes, List<Morphogen> morphogens, List<Gene> genes) {
+        // TODO: consider deep copies here
+        this.metaGenes = new ArrayList<MetaGene>(metaGenes);
+        this.morphogens = new ArrayList<Morphogen>(morphogens);
+        this.genes = new ArrayList<Gene>(genes);
     }
 
     public Genome(Genome genome) {
-        this.startPosition.set(genome.getStartPosition());
-        this.initialImpulse.set(genome.getInitialImpulse());
+        // TODO: consider deep copies here
+        this.metaGenes = new ArrayList<MetaGene>(genome.getMetaGenes());
+        this.morphogens = new ArrayList<Morphogen>(genome.getMorphogens());
+        this.genes = new ArrayList<Gene>(genome.getGenes());
         this.fitness = genome.getFitness();
     }
 
-    public Genome(float startX, float startY, float impulseX, float impulseY) {
-        this.startPosition.set(startX, startY);
-        this.initialImpulse.set(impulseX, impulseY);
-        this.fitness = Float.MAX_VALUE;
+    public List<MetaGene> getMetaGenes() {
+        return metaGenes;
     }
 
-    public static Genome getOffspringOf(Genome genome) {
-        var offspring = new Genome(genome).mutate();
-        offspring.setFitness(Float.MAX_VALUE);
-        return offspring;
+    public List<Morphogen> getMorphogens() {
+        return morphogens;
     }
 
-    public Vector2 getStartPosition() {
-        return this.startPosition;
-    }
-
-    public Vector2 getInitialImpulse() {
-        return this.initialImpulse;
+    public List<Gene> getGenes() {
+        return genes;
     }
 
     public float getFitness() {
-        return this.fitness;
+        return fitness;
     }
 
     public void setFitness(float fitness) {
         this.fitness = fitness;
     }
 
+    @Override
     public String toString() {
-        return "Genome(startPositon=" + this.getStartPosition() +
-                ", initialImpulse=" + this.getInitialImpulse() +
-                ", fitness=" + this.getFitness() + ")";
-    }
-
-    private Genome mutate() {
-        startPosition.add(
-                new Vector2(
-                        (float) (Math.random() - 0.5) * START_POSITION_MUTATION_RATE,
-                        (float) (Math.random() - 0.5) * START_POSITION_MUTATION_RATE));
-        initialImpulse.add(
-                new Vector2(
-                        (float) (Math.random() - 0.5) * IMPULSE_MUTATION_RATE,
-                        (float) (Math.random() - 0.5) * IMPULSE_MUTATION_RATE));
-        return this;
+        StringBuilder sb = new StringBuilder();
+        sb.append("Genome {\n");
+        sb.append("  metaGenes=").append(metaGenes).append(",\n");
+        sb.append("  morphogens=").append(morphogens).append(",\n");
+        sb.append("  genes=").append(genes).append(",\n");
+        sb.append("  fitness=").append(fitness).append("\n");
+        sb.append("}");
+        return sb.toString();
     }
 }

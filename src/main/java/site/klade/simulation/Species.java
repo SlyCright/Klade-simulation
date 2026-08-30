@@ -4,15 +4,15 @@ import java.util.ArrayList;
 
 public class Species {
 
-    private  ArrayList<Genome> genomes = new ArrayList<>();
+    private  ArrayList<Genome> genomes = new ArrayList<Genome>();
 
     public Species() {
-        this.genomes = new ArrayList<>();
+        this.genomes = new ArrayList<Genome>();
     }
 
     public Species(int specimensPerSpecies) {
         for (int i = 0; i < specimensPerSpecies; i++) {
-            genomes.add(new Genome());
+//            genomes.add(new Genome());
         }
     }
 
