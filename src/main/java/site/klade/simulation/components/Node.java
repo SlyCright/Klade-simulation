@@ -6,6 +6,8 @@ public class Node implements Component {
 
     public int specimenId;
 
+    public NodeType nodeType;
+
     public int[] inputSegmentId;
 
     public int[] outputSegmentId;

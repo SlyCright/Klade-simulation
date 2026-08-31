@@ -25,7 +25,6 @@ public class Arena {
             engine.addEntity(stemNode);
         }
         addSystems();
-        checkInitialDistanceFromCenter();
     }
 
     private Entity createSpecimenEntity(Genome genome) {
@@ -51,6 +50,7 @@ public class Arena {
 
         Node nodeComponent = new Node();
         nodeComponent.specimenId = specimenId;
+        nodeComponent.nodeType = NodeType.STEM;
         stemNode.add(nodeComponent);
         stemNode.add(new Kinematics());
 
@@ -99,20 +99,4 @@ public class Arena {
         engine.update(0f);
     }
 
-    private void checkInitialDistanceFromCenter() {
-        Family family = Family.all(
-                Kinematics.class,
-                GenomeWrap.class,
-                ToleranceStatus.class
-        ).get();
-        ImmutableArray<Entity> entities = engine.getEntitiesFor(family);
-//        for (Entity entity : entities) {
-//            var kinematics = entity.getComponent(Kinematics.class);
-//            float initialDistanceFromCenter = kinematics.getPosition().dst(0f, 0f);
-//            if (initialDistanceFromCenter < MIN_INITIAL_DISTANCE) {
-//                entity.getComponent(ToleranceStatus.class).setToleranceReached(true);
-//                entity.getComponent(GenomeWrap.class).setFitness(Float.MAX_VALUE);
-//            }
-//        }
-    }
 }
