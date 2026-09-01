@@ -77,12 +77,12 @@ public class Arena {
     }
 
     private void addSystems() {
-        engine.addSystem(new ToleranceExclusion(10));
-        engine.addSystem(new Friction(20));
-        engine.addSystem(new Collision(30));
-        engine.addSystem(new Movement(40));
-        engine.addSystem(new ToleranceCalculation(50));
-        engine.addSystem(new FitnessCalculation(100));
+        PriorityGenerator priority = new PriorityGenerator();
+        engine.addSystem(new Friction(priority.next(), settings.getFrictionFactor()));
+        engine.addSystem(new Collision(priority.next(), settings.getSpecimenSize(), settings.getRepulsionForceMultiplier()));
+        engine.addSystem(new Movement(priority.next()));
+        engine.addSystem(new ToleranceCalculation(priority.next()));
+        engine.addSystem(new FitnessCalculation(priority.next()));
     }
 
     public boolean isEvaluationComplete() {

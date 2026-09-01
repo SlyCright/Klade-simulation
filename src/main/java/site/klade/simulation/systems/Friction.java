@@ -9,24 +9,23 @@ import site.klade.simulation.components.Kinematics;
 
 public class Friction extends EntitySystem {
 
-    // TODO: that's simulation setting. Should move there
-    public static final float FRICTION_FACTOR = 0.01f;
+    private final float frictionFactor;
 
     private final Family family = Family.all(Kinematics.class).get();
 
     private final Vector2 friction = new Vector2();
 
-    public Friction(int priority) {
+    public Friction(int priority, float frictionFactor) {
         super(priority);
+        this.frictionFactor = frictionFactor;
     }
 
     @Override
     public void update(float deltaTime) {
-        ImmutableArray<Entity> entities = getEngine().getEntitiesFor(family);
-        for (Entity entity : entities) {
-            var kinematics = entity.getComponent(Kinematics.class);
-            friction.set(kinematics.getVelocity()).scl(-FRICTION_FACTOR);
-            kinematics.getAcceleration().add(friction);
+        for (Entity entity : getEngine().getEntitiesFor(family)) {
+            Kinematics kinematics = entity.getComponent(Kinematics.class);
+            friction.set(kinematics.velocity).scl(-frictionFactor);
+            kinematics.acceleration.add(friction);
         }
     }
 }

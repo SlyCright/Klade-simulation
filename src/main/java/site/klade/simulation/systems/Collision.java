@@ -10,21 +10,19 @@ import site.klade.simulation.components.Kinematics;
 
 public class Collision extends EntitySystem {
 
-    // TODO: that's simulation setting. Should move there.
-    //  Also it should determines how the Specimen Renderer from "Stage" represents a specimen
-    public static final float SPECIMEN_SIZE = 18f;
-
-    public static final float SHIFT_AMOUNT = 0.001f;
-
-    public static final float REPULSION_FORCE_MULTIPLIER = 10f;
+    private final float specimenSize;
+    private final float repulsionForceMultiplier;
+    private static final float SHIFT_AMOUNT = 0.001f;
 
     private final Family family = Family.all(Kinematics.class).get();
 
     private final Vector2 forceVectorI = new Vector2();
     private final Vector2 forceVectorJ = new Vector2();
 
-    public Collision(int priority) {
+    public Collision(int priority, float specimenSize, float repulsionForceMultiplier) {
         super(priority);
+        this.specimenSize = specimenSize;
+        this.repulsionForceMultiplier = repulsionForceMultiplier;
     }
 
     @Override
@@ -37,7 +35,7 @@ public class Collision extends EntitySystem {
                 Kinematics componentJ = entities.get(j).getComponent(Kinematics.class);
                 Vector2 positionJ = componentJ.getPosition();
                 float distance = positionI.dst(positionJ);
-                if (distance > SPECIMEN_SIZE) continue;
+                if (distance > specimenSize) continue;
                 if (distance > 0) { // "distance > 0" guard against zero divide
                     handleCollision(componentI, componentJ, distance);
                     continue;
@@ -55,8 +53,8 @@ public class Collision extends EntitySystem {
         forceVectorI.sub(positionJ);
         forceVectorI.nor();
 
-        float repulsionStrength = (SPECIMEN_SIZE - distance) / SPECIMEN_SIZE;
-        float forceValue = repulsionStrength * REPULSION_FORCE_MULTIPLIER;
+        float repulsionStrength = (specimenSize - distance) / specimenSize;
+        float forceValue = repulsionStrength * repulsionForceMultiplier;
         forceVectorI.scl(forceValue);
         forceVectorJ.set(forceVectorI).scl(-1f);
         componentI.getAcceleration().add(forceVectorI);
