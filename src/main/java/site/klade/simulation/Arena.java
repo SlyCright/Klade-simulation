@@ -13,18 +13,25 @@ public class Arena {
 
     private final Engine engine = new Engine();
     private final IdEngine idEngine = new IdEngine();
+    private final ArenaSettingsDto settings;
 
     private boolean evaluationComplete = false;
 
-    public Arena(ArrayList<Genome> genomes) {
+    public Arena(ArrayList<Genome> genomes, ArenaSettingsDto settings) {
+        this.settings = settings;
+        addEntities(genomes);
+        addSystems();
+    }
+
+    private void addEntities(ArrayList<Genome> genomes) {
         for (Genome genome : genomes) {
             Entity specimenEntity = createSpecimenEntity(genome);
             EntityId specimenId = specimenEntity.getComponent(EntityId.class);
-            Entity stemNode = createStemNodeEntity(specimenId.id);
+            Entity stemNode = createStemNodeEntity(
+                    specimenId.id, genome.getMetaGenes().getInitialPositionAngleDegrees());
             engine.addEntity(specimenEntity);
             engine.addEntity(stemNode);
         }
-        addSystems();
     }
 
     private Entity createSpecimenEntity(Genome genome) {
@@ -40,19 +47,31 @@ public class Arena {
         return specimenEntity;
     }
 
-    private Entity createStemNodeEntity(int specimenId) {
+    private Entity createStemNodeEntity(int specimenId, float initialPositionAngleDegrees) {
+
+        // Entity creation and registration
         Entity stemNode = engine.createEntity();
         idEngine.registerEntity(stemNode);
 
+        // EntityId component
         EntityId stemNodeId = new EntityId();
         stemNodeId.id = idEngine.getIdByEntity(stemNode);
         stemNode.add(stemNodeId);
 
+        // Node component
         Node nodeComponent = new Node();
         nodeComponent.specimenId = specimenId;
         nodeComponent.nodeType = NodeType.STEM;
         stemNode.add(nodeComponent);
-        stemNode.add(new Kinematics());
+
+        // Kinematics component with initial position calculation
+        Kinematics kinematics = new Kinematics();
+        float initialDistance = this.settings.getInitialDistance();
+        float initialAngleRadians = (float) Math.toRadians(initialPositionAngleDegrees);
+        float initialX = initialDistance * (float) Math.cos(initialAngleRadians);
+        float initialY = initialDistance * (float) Math.sin(initialAngleRadians);
+        kinematics.position.set(initialX, initialY);
+        stemNode.add(kinematics);
 
         return stemNode;
     }
