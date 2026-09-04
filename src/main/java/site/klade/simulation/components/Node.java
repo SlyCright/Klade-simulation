@@ -4,8 +4,6 @@ import com.badlogic.ashley.core.Component;
 
 public class Node implements Component {
 
-    public int specimenId;
-
     public NodeType nodeType;
 
     public int[] inputSegmentId;

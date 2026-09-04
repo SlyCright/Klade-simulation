@@ -10,19 +10,22 @@ import site.klade.simulation.components.Kinematics;
 
 public class Collision extends EntitySystem {
 
-    private final float specimenSize;
-    private final float repulsionForceMultiplier;
     private static final float SHIFT_AMOUNT = 0.001f;
+
+    private final float nodeSize;
+
+    private final float repulsionFactor;
 
     private final Family family = Family.all(Kinematics.class).get();
 
     private final Vector2 forceVectorI = new Vector2();
+
     private final Vector2 forceVectorJ = new Vector2();
 
-    public Collision(int priority, float specimenSize, float repulsionForceMultiplier) {
+    public Collision(int priority, float nodeSize, float repulsionFactor) {
         super(priority);
-        this.specimenSize = specimenSize;
-        this.repulsionForceMultiplier = repulsionForceMultiplier;
+        this.nodeSize = nodeSize;
+        this.repulsionFactor = repulsionFactor;
     }
 
     @Override
@@ -30,47 +33,40 @@ public class Collision extends EntitySystem {
         ImmutableArray<Entity> entities = getEngine().getEntitiesFor(family);
         for (int i = 0; i < entities.size(); i++) {
             Kinematics componentI = entities.get(i).getComponent(Kinematics.class);
-            Vector2 positionI = componentI.getPosition();
             for (int j = i + 1; j < entities.size(); j++) {
                 Kinematics componentJ = entities.get(j).getComponent(Kinematics.class);
-                Vector2 positionJ = componentJ.getPosition();
-                float distance = positionI.dst(positionJ);
-                if (distance > specimenSize) continue;
-                if (distance > 0) { // "distance > 0" guard against zero divide
-                    handleCollision(componentI, componentJ, distance);
-                    continue;
-                }
-                handleExactOverlap(componentI, componentJ);
+                handleCollision(componentI, componentJ);
             }
         }
     }
 
-    private void handleCollision(Kinematics componentI, Kinematics componentJ, float distance) {
-        Vector2 positionI = componentI.getPosition();
-        Vector2 positionJ = componentJ.getPosition();
-
-        forceVectorI.set(positionI);
-        forceVectorI.sub(positionJ);
-        forceVectorI.nor();
-
-        float repulsionStrength = (specimenSize - distance) / specimenSize;
-        float forceValue = repulsionStrength * repulsionForceMultiplier;
-        forceVectorI.scl(forceValue);
-        forceVectorJ.set(forceVectorI).scl(-1f);
-        componentI.getAcceleration().add(forceVectorI);
-        componentJ.getAcceleration().add(forceVectorJ);
+    private void handleCollision(Kinematics componentI, Kinematics componentJ) {
+        float distance = componentI.position.dst(componentJ.position);
+        if (distance > nodeSize) return;
+        if (distance > 0) {
+            forceVectorI.set(componentI.position);
+            forceVectorI.sub(componentJ.position);
+            forceVectorI.nor();
+            float repulsionStrength = (nodeSize - distance) / nodeSize;
+            float forceValue = repulsionStrength * repulsionFactor;
+            forceVectorI.scl(forceValue);
+            forceVectorJ.set(forceVectorI).scl(-1f);
+            componentI.acceleration.add(forceVectorI);
+            componentJ.acceleration.add(forceVectorJ);
+            return;
+        }
+        handleExactOverlap(componentI, componentJ);
     }
 
     private void handleExactOverlap(Kinematics componentI, Kinematics componentJ) {
-        boolean bothStationary = componentI.getVelocity().isZero()
-                && componentJ.getVelocity().isZero()
-                && componentI.getAcceleration().isZero()
-                && componentJ.getAcceleration().isZero();
-
+        boolean bothStationary = componentI.velocity.isZero()
+                && componentJ.velocity.isZero()
+                && componentI.acceleration.isZero()
+                && componentJ.acceleration.isZero();
         if (bothStationary) {
-            componentI.getPosition().add(MathUtils.random(-SHIFT_AMOUNT, SHIFT_AMOUNT),
+            componentI.position.add(MathUtils.random(-SHIFT_AMOUNT, SHIFT_AMOUNT),
                     MathUtils.random(-SHIFT_AMOUNT, SHIFT_AMOUNT));
-            componentJ.getPosition().add(MathUtils.random(-SHIFT_AMOUNT, SHIFT_AMOUNT),
+            componentJ.position.add(MathUtils.random(-SHIFT_AMOUNT, SHIFT_AMOUNT),
                     MathUtils.random(-SHIFT_AMOUNT, SHIFT_AMOUNT));
         }
     }

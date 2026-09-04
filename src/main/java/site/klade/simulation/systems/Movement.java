@@ -5,7 +5,6 @@ import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.math.Vector2;
-import site.klade.simulation.components.ToleranceStatus;
 import site.klade.simulation.components.Kinematics;
 
 public class Movement extends EntitySystem {
@@ -20,14 +19,12 @@ public class Movement extends EntitySystem {
     public void update(float deltaTime) {
         ImmutableArray<Entity> entities = getEngine().getEntitiesFor(family);
         for (Entity entity : entities) {
-            var toleranceComponent = entity.getComponent(ToleranceStatus.class);
-            if (toleranceComponent != null && toleranceComponent.isToleranceReached()) continue;
-            var kinematics = entity.getComponent(Kinematics.class);
-            Vector2 acceleration = kinematics.getAcceleration();
-            Vector2 velocity = kinematics.getVelocity();
+            Kinematics kinematics = entity.getComponent(Kinematics.class);
+            Vector2 acceleration = kinematics.acceleration;
+            Vector2 velocity = kinematics.velocity;
             velocity.add(acceleration);
-            kinematics.getPosition().add(velocity);
-            kinematics.getAcceleration().set(0f, 0f);
+            kinematics.position.add(velocity);
+            kinematics.acceleration.set(0f, 0f);
         }
     }
 }

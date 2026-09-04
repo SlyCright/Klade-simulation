@@ -1,9 +1,13 @@
 package site.klade.simulation;
 
 public class Morphogen {
+
     private int id;
+
     private float diffusionRatio;
+
     private float decayRatio;
+
     private String spreadingConditions;
 
     public Morphogen(int id, float diffusionRatio, float decayRatio, String spreadingConditions) {
@@ -47,7 +51,10 @@ public class Morphogen {
 
     @Override
     public String toString() {
-        return "Morphogen(id=" + id + ", diffusionRatio=" + diffusionRatio + 
-               ", decayRatio=" + decayRatio + ", spreadingConditions=" + spreadingConditions + ")";
+        return String.format(
+                "{\"id\": %d, \"diffusionRatio\": %f, \"decayRatio\": %f, \"spreadingConditions\": %s}",
+                id, diffusionRatio, decayRatio, spreadingConditions
+        );
     }
+
 }

@@ -2,25 +2,26 @@ package site.klade.simulation;
 
 public class MetaGenes {
 
-    private float initialPositionAngleDegrees;
+    private float initialAngle;     // Initial spawn angle in degrees (0°-360°)
 
     public MetaGenes() {
     }
 
-    public MetaGenes(float initialPositionAngleDegrees) {
-        this.initialPositionAngleDegrees = initialPositionAngleDegrees;
+    public MetaGenes(float initialAngle) {
+        this.initialAngle = initialAngle;
     }
 
-    public float getInitialPositionAngleDegrees() {
-        return initialPositionAngleDegrees;
+    public float getInitialAngle() {
+        return initialAngle;
     }
 
-    public void setInitialPositionAngleDegrees(float initialPositionAngleDegrees) {
-        this.initialPositionAngleDegrees = initialPositionAngleDegrees;
+    public void setInitialAngle(float initialAngle) {
+        this.initialAngle = initialAngle;
     }
 
     @Override
     public String toString() {
-        return "MetaGenes(initialPositionAngleDegrees=" + initialPositionAngleDegrees + ")";
+        return String.format("{\"initialAngle\": %f}", initialAngle);
     }
+
 }

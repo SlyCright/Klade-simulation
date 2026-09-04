@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Genome {
+
     private final MetaGenes metaGenes;
+
     private List<Morphogen> morphogens = new ArrayList<Morphogen>();
+
     private List<Gene> genes = new ArrayList<Gene>();
+
     private float fitness = Float.MAX_VALUE;
 
     public Genome(MetaGenes metaGenes, List<Morphogen> morphogens, List<Gene> genes) {
@@ -28,6 +32,10 @@ public class Genome {
         return metaGenes;
     }
 
+    public float getInitialAngle() {
+        return metaGenes.getInitialAngle();
+    }
+
     public List<Morphogen> getMorphogens() {
         return morphogens;
     }
@@ -46,13 +54,10 @@ public class Genome {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Genome {\n");
-        sb.append("  metaGenes=").append(metaGenes).append(",\n");
-        sb.append("  morphogens=").append(morphogens).append(",\n");
-        sb.append("  genes=").append(genes).append(",\n");
-        sb.append("  fitness=").append(fitness).append("\n");
-        sb.append("}");
-        return sb.toString();
+        return String.format(
+            "{\"metaGenes\": %s, \"morphogens\": %s, \"genes\": %s, \"fitness\": %f}",
+            metaGenes, morphogens, genes, fitness
+        );
     }
+
 }

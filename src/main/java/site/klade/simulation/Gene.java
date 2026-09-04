@@ -1,8 +1,11 @@
 package site.klade.simulation;
 
 public class Gene {
+
     private String condition;
+
     private GeneAction action;
+
     private String parameters;
 
     public Gene(String condition, GeneAction action, String parameters) {
@@ -39,4 +42,5 @@ public class Gene {
     public String toString() {
         return "Gene(condition=" + condition + ", action=" + action + ", parameters=" + parameters + ")";
     }
+
 }
