@@ -52,8 +52,7 @@ public class Arena {
         float angleRadians = (float) Math.toRadians(angleDegrees);
         kinematics.position.set(
                 distance * (float) Math.cos(angleRadians),
-                distance * (float) Math.sin(angleRadians)
-        );
+                distance * (float) Math.sin(angleRadians));
         stemNode.add(kinematics);
         return stemNode;
     }

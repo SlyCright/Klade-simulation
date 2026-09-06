@@ -31,7 +31,7 @@ public class FitnessCalculation extends EntitySystem {
                 avgPosition.add(kinematics.position);
             }
             avgPosition.scl(1f / specimenComponent.nodes.size);
-            genomeWrap.genome.setFitness(avgPosition.len());
+            genomeWrap.genome.setCurrentFitness(avgPosition.len());
         }
     }
 

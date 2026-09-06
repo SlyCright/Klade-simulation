@@ -11,12 +11,20 @@ public class Genome {
 
     private List<Gene> genes = new ArrayList<Gene>();
 
-    private float fitness = Float.MAX_VALUE;
+    private float currentFitness = Float.MAX_VALUE;  // Updated every battle tick
+
+    private float accumulatedFitness = 0.0f;         // Summed after every battle
 
     public Genome() {
     }
 
-    public Genome(MetaGenes metaGenes, List<Morphogen> morphogens, List<Gene> genes, float fitness) {
+    public Genome(
+            MetaGenes metaGenes,
+            List<Morphogen> morphogens,
+            List<Gene> genes,
+            float currentFitness,
+            float accumulatedFitness
+    ) {
         this.metaGenes = new MetaGenes(metaGenes);
         this.morphogens = new ArrayList<Morphogen>(morphogens.size());
         for (Morphogen m : morphogens) {
@@ -26,15 +34,21 @@ public class Genome {
         for (Gene g : genes) {
             this.genes.add(new Gene(g));
         }
-        this.fitness = fitness;
+        this.currentFitness = currentFitness;
+        this.accumulatedFitness = accumulatedFitness;
     }
 
     public Genome(MetaGenes metaGenes, List<Morphogen> morphogens, List<Gene> genes) {
-        this(metaGenes, morphogens, genes, Float.MAX_VALUE);
+        this(metaGenes, morphogens, genes, Float.MAX_VALUE, 0.0f);
     }
 
     public Genome(Genome genome) {
-        this(genome.getMetaGenes(), genome.getMorphogens(), genome.getGenes(), genome.getFitness());
+        this(
+                genome.getMetaGenes(),
+                genome.getMorphogens(),
+                genome.getGenes(),
+                genome.getCurrentFitness(),
+                genome.getAccumulatedFitness());
     }
 
     public MetaGenes getMetaGenes() {
@@ -53,19 +67,36 @@ public class Genome {
         return genes;
     }
 
-    public float getFitness() {
-        return fitness;
+    public float getCurrentFitness() {
+        return currentFitness;
     }
 
-    public void setFitness(float fitness) {
-        this.fitness = fitness;
+    public void setCurrentFitness(float currentFitness) {
+        this.currentFitness = currentFitness;
+    }
+
+    public float getAccumulatedFitness() {
+        return accumulatedFitness;
+    }
+
+    public void setAccumulatedFitness(float accumulatedFitness) {
+        this.accumulatedFitness = accumulatedFitness;
+    }
+
+    public void resetCurrentFitness() {
+        this.currentFitness = Float.MAX_VALUE;
+    }
+
+    public void resetFitnesses() {
+        this.currentFitness = Float.MAX_VALUE;
+        this.accumulatedFitness = 0.0f;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "{\"metaGenes\": %s, \"morphogens\": %s, \"genes\": %s, \"fitness\": %f}",
-                metaGenes, morphogens, genes, fitness
+                "{\"metaGenes\": %s, \"morphogens\": %s, \"genes\": %s, \"currentFitness\": %f, \"accumulatedFitness\": %f}",
+                metaGenes, morphogens, genes, currentFitness, accumulatedFitness
         );
     }
 
