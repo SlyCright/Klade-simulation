@@ -14,11 +14,11 @@ public class Arena {
 
     private final Engine engine = new Engine();
 
-    private final ArenaSettingsDto settings;
+    private final ArenaSettings settings;
 
     private final TickCounter tickCounter;
 
-    public Arena(ArrayList<Genome> genomes, ArenaSettingsDto settings) {
+    public Arena(ArrayList<Genome> genomes, ArenaSettings settings) {
         this.settings = settings;
         this.tickCounter = new TickCounter(settings.getMaxTicks());
         addEntities(genomes);
