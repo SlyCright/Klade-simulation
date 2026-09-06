@@ -92,6 +92,10 @@ public class Genome {
         this.accumulatedFitness = 0.0f;
     }
 
+    public void updateAccumulatedFitness() {
+        accumulatedFitness += currentFitness;
+    }
+
     @Override
     public String toString() {
         return String.format(
