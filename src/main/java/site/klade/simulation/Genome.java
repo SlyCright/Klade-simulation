@@ -16,19 +16,25 @@ public class Genome {
     public Genome() {
     }
 
+    public Genome(MetaGenes metaGenes, List<Morphogen> morphogens, List<Gene> genes, float fitness) {
+        this.metaGenes = new MetaGenes(metaGenes);
+        this.morphogens = new ArrayList<Morphogen>(morphogens.size());
+        for (Morphogen m : morphogens) {
+            this.morphogens.add(new Morphogen(m));
+        }
+        this.genes = new ArrayList<Gene>(genes.size());
+        for (Gene g : genes) {
+            this.genes.add(new Gene(g));
+        }
+        this.fitness = fitness;
+    }
+
     public Genome(MetaGenes metaGenes, List<Morphogen> morphogens, List<Gene> genes) {
-        // TODO: consider deep copies here
-        this.metaGenes = metaGenes;
-        this.morphogens = new ArrayList<Morphogen>(morphogens);
-        this.genes = new ArrayList<Gene>(genes);
+        this(metaGenes, morphogens, genes, Float.MAX_VALUE);
     }
 
     public Genome(Genome genome) {
-        // TODO: consider deep copies here
-        this.metaGenes = genome.getMetaGenes();
-        this.morphogens = new ArrayList<Morphogen>(genome.getMorphogens());
-        this.genes = new ArrayList<Gene>(genome.getGenes());
-        this.fitness = genome.getFitness();
+        this(genome.getMetaGenes(), genome.getMorphogens(), genome.getGenes(), genome.getFitness());
     }
 
     public MetaGenes getMetaGenes() {

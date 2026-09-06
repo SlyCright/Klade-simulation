@@ -17,6 +17,13 @@ public class Morphogen {
         this.spreadingConditions = spreadingConditions;
     }
 
+    public Morphogen(Morphogen other) {
+        this.id = other.id;
+        this.diffusionRatio = other.diffusionRatio;
+        this.decayRatio = other.decayRatio;
+        this.spreadingConditions = other.spreadingConditions;
+    }
+
     public int getId() {
         return id;
     }

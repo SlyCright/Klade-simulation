@@ -14,6 +14,12 @@ public class Gene {
         this.parameters = parameters;
     }
 
+    public Gene(Gene other) {
+        this.condition = other.condition;
+        this.action = other.action;
+        this.parameters = other.parameters;
+    }
+
     public String getCondition() {
         return condition;
     }

@@ -11,6 +11,10 @@ public class MetaGenes {
         this.initialAngle = initialAngle;
     }
 
+    public MetaGenes(MetaGenes other) {
+        this.initialAngle = other.initialAngle;
+    }
+
     public float getInitialAngle() {
         return initialAngle;
     }
