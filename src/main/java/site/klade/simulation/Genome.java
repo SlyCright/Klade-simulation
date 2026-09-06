@@ -5,13 +5,16 @@ import java.util.List;
 
 public class Genome {
 
-    private final MetaGenes metaGenes;
+    private MetaGenes metaGenes = new MetaGenes();
 
     private List<Morphogen> morphogens = new ArrayList<Morphogen>();
 
     private List<Gene> genes = new ArrayList<Gene>();
 
     private float fitness = Float.MAX_VALUE;
+
+    public Genome() {
+    }
 
     public Genome(MetaGenes metaGenes, List<Morphogen> morphogens, List<Gene> genes) {
         // TODO: consider deep copies here
@@ -55,8 +58,8 @@ public class Genome {
     @Override
     public String toString() {
         return String.format(
-            "{\"metaGenes\": %s, \"morphogens\": %s, \"genes\": %s, \"fitness\": %f}",
-            metaGenes, morphogens, genes, fitness
+                "{\"metaGenes\": %s, \"morphogens\": %s, \"genes\": %s, \"fitness\": %f}",
+                metaGenes, morphogens, genes, fitness
         );
     }
 
