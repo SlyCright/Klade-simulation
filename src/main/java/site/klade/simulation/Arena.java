@@ -2,6 +2,8 @@ package site.klade.simulation;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
 import site.klade.simulation.components.*;
 import site.klade.simulation.systems.Collision;
 import site.klade.simulation.systems.FitnessCalculation;
@@ -79,6 +81,10 @@ public class Arena {
     private void executeTick() {
         engine.update(0f);
         tickCounter.increment();
+    }
+
+    public ImmutableArray<Entity> getEntitiesFor(Family family) {
+        return engine.getEntitiesFor(family);
     }
 
 }
