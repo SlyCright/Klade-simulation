@@ -2,17 +2,29 @@ package site.klade.simulation;
 
 public class MetaGenes {
 
-    private float initialAngle;     // Initial spawn angle in degrees (0°-360°)
+    private float hyperGene; // (0.0, 1.0] Self-adaptive R_max hyper-gene: scales effective rank and mutation intensity
+
+    private float initialAngle; // [0.0, 360.0] Initial spawn angle in degrees
 
     public MetaGenes() {
     }
 
-    public MetaGenes(float initialAngle) {
+    public MetaGenes(float hyperGene, float initialAngle) {
+        this.hyperGene = hyperGene;
         this.initialAngle = initialAngle;
     }
 
     public MetaGenes(MetaGenes other) {
+        this.hyperGene = other.hyperGene;
         this.initialAngle = other.initialAngle;
+    }
+
+    public void setHyperGene(float hyperGene) {
+        this.hyperGene = hyperGene;
+    }
+
+    public float getHyperGene() {
+        return hyperGene;
     }
 
     public float getInitialAngle() {
@@ -25,7 +37,7 @@ public class MetaGenes {
 
     @Override
     public String toString() {
-        return String.format("{\"initialAngle\": %f}", initialAngle);
+        return String.format("{\"hyperGene\": %f, \"initialAngle\": %f}", hyperGene, initialAngle);
     }
 
 }
