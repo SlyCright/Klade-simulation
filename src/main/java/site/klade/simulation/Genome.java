@@ -98,10 +98,7 @@ public class Genome {
 
     @Override
     public String toString() {
-        return String.format(
-                "{\"metaGenes\": %s, \"morphogens\": %s, \"genes\": %s, \"currentFitness\": %f, \"accumulatedFitness\": %f}",
-                metaGenes, morphogens, genes, currentFitness, accumulatedFitness
-        );
+        return "{\"metaGenes\": " + metaGenes + ", \"morphogens\": " + morphogens + ", \"genes\": " + genes + ", \"currentFitness\": " + currentFitness + ", \"accumulatedFitness\": " + accumulatedFitness + "}";
     }
 
 }

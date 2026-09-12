@@ -58,10 +58,7 @@ public class Morphogen {
 
     @Override
     public String toString() {
-        return String.format(
-                "{\"id\": %d, \"diffusionRatio\": %f, \"decayRatio\": %f, \"spreadingConditions\": %s}",
-                id, diffusionRatio, decayRatio, spreadingConditions
-        );
+        return "{\"id\": " + id + ", \"diffusionRatio\": " + diffusionRatio + ", \"decayRatio\": " + decayRatio + ", \"spreadingConditions\": " + spreadingConditions + "}";
     }
 
 }

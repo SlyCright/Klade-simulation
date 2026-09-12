@@ -42,10 +42,7 @@ public class ArenaSettings {
 
     @Override
     public String toString() {
-        return String.format(
-                "{\"initialDistance\": %f, \"frictionFactor\": %f, \"nodeSize\": %f, \"repulsionFactor\": %f, \"maxTicks\": %d}",
-                initialDistance, frictionFactor, nodeSize, repulsionFactor, maxTicks
-        );
+        return "{\"initialDistance\": " + initialDistance + ", \"frictionFactor\": " + frictionFactor + ", \"nodeSize\": " + nodeSize + ", \"repulsionFactor\": " + repulsionFactor + ", \"maxTicks\": " + maxTicks + "}";
     }
 
 }

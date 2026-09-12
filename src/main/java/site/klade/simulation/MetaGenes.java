@@ -37,7 +37,7 @@ public class MetaGenes {
 
     @Override
     public String toString() {
-        return String.format("{\"hyperGene\": %f, \"initialAngle\": %f}", hyperGene, initialAngle);
+        return "{\"hyperGene\": " + hyperGene + ", \"initialAngle\": " + initialAngle + "}";
     }
 
 }
