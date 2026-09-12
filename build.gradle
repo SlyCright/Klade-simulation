@@ -40,13 +40,14 @@ tasks.register('installToMavenLocal') {
 }
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
-    }
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
     withSourcesJar()
 }
+
+// Strictly target Java 11 API + bytecode regardless of the JDK used to run Gradle (no JDK-11 toolchain required).
+compileJava.options.release = 11
+compileTestJava.options.release = 11
 
 // Simple JAR publication for local consumption
 publishing {
