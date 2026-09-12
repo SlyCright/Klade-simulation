@@ -24,4 +24,8 @@ public class TickCounter {
         return done;
     }
 
+    public int getCurrentTick() {
+        return currentTick;
+    }
+
 }

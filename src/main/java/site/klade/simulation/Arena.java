@@ -81,6 +81,10 @@ public class Arena {
         return tickCounter.isDone();
     }
 
+    public int getCurrentTick() {
+        return tickCounter.getCurrentTick();
+    }
+
     private void executeTick() {
         engine.update(0f);
         tickCounter.increment();
