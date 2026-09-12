@@ -6,18 +6,22 @@ public class TickCounter {
 
     private final int maxTicks;
 
-    private boolean evaluationComplete = false;
+    private boolean done = false;
 
     public TickCounter(int maxTicks) {
         this.maxTicks = maxTicks;
     }
 
     public void increment() {
-        if (currentTick++ >= maxTicks) evaluationComplete = true;
+        if (++currentTick >= maxTicks) done = true;
     }
 
     public boolean shouldContinue() {
-        return !evaluationComplete;
+        return !done;
+    }
+
+    public boolean isDone() {
+        return done;
     }
 
 }

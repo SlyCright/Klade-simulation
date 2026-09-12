@@ -74,8 +74,11 @@ public class Arena {
 
     // that's for visualization in Stage
     public void update() {
-        if (!tickCounter.shouldContinue()) return;
-        executeTick();
+        if (tickCounter.shouldContinue()) executeTick();
+    }
+
+    public boolean isDone() {
+        return tickCounter.isDone();
     }
 
     private void executeTick() {
