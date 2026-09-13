@@ -15,10 +15,12 @@ public class Genome {
 
     private float accumulatedFitness = 0.0f;         // Summed after every battle
 
+    // Constructor for first generation initialization
     public Genome(float hyperGene) {
-        this.metaGenes = new MetaGenes(hyperGene);
+        this.metaGenes = MetaGenes.createWithHyperGene(hyperGene);
     }
 
+    // Constructor for offspring creation (don't forget to reset fitnesses)
     public Genome(Genome other) {
         this.metaGenes = new MetaGenes(other.getMetaGenes());
         List<Morphogen> otherMorphogenes = other.getMorphogens();
@@ -31,8 +33,15 @@ public class Genome {
         for (Gene g : otherGenes) {
             this.genes.add(new Gene(g));
         }
-        currentFitness = Float.MAX_VALUE;
-        accumulatedFitness = 0.0f;
+        this.currentFitness = other.getCurrentFitness();
+        this.accumulatedFitness = other.getAccumulatedFitness();
+    }
+
+    // Constructor for creation from DTO
+    public Genome(MetaGenes metaGenes, List<Morphogen> morphogens, List<Gene> genes) {
+        this.metaGenes = metaGenes;
+        this.morphogens = new ArrayList<Morphogen>(morphogens);
+        this.genes = new ArrayList<Gene>(genes);
     }
 
     public MetaGenes getMetaGenes() {

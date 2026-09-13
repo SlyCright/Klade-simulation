@@ -1,5 +1,7 @@
 package site.klade.simulation;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class MetaGenes {
@@ -8,14 +10,24 @@ public class MetaGenes {
 
     private float initialAngle; // [0.0, 360.0] Initial spawn angle in degrees
 
-    public MetaGenes(float hyperGene) {
+    // Constructor for first generation initialization and loading from DTO
+    private MetaGenes(float hyperGene, float initialAngle) {
         this.hyperGene = hyperGene;
-        this.initialAngle = new Random().nextFloat() * 360.0f;
+        this.initialAngle = initialAngle;
     }
 
+    // Constructor for offspring creation
     public MetaGenes(MetaGenes other) {
         this.hyperGene = other.hyperGene;
         this.initialAngle = other.initialAngle;
+    }
+
+    public static MetaGenes createWithHyperGene(float hyperGene) { // for first generation initialization
+        return new MetaGenes(hyperGene, new Random().nextFloat() * 360.0f);
+    }
+
+    public static MetaGenes createWithInitialAngle(float initialAngle) { // for creation from DTO
+        return new MetaGenes(0.5f, initialAngle);
     }
 
     public void setHyperGene(float hyperGene) {
