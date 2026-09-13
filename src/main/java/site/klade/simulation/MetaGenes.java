@@ -1,17 +1,16 @@
 package site.klade.simulation;
 
+import java.util.Random;
+
 public class MetaGenes {
 
     private float hyperGene; // (0.0, 1.0] Self-adaptive R_max hyper-gene: scales effective rank and mutation intensity
 
     private float initialAngle; // [0.0, 360.0] Initial spawn angle in degrees
 
-    public MetaGenes() {
-    }
-
-    public MetaGenes(float hyperGene, float initialAngle) {
+    public MetaGenes(float hyperGene) {
         this.hyperGene = hyperGene;
-        this.initialAngle = initialAngle;
+        this.initialAngle = new Random().nextFloat() * 360.0f;
     }
 
     public MetaGenes(MetaGenes other) {

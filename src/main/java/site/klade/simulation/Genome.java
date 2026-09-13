@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Genome {
 
-    private MetaGenes metaGenes = new MetaGenes();
+    private final MetaGenes metaGenes;
 
     private List<Morphogen> morphogens = new ArrayList<Morphogen>();
 
@@ -15,40 +15,24 @@ public class Genome {
 
     private float accumulatedFitness = 0.0f;         // Summed after every battle
 
-    public Genome() {
+    public Genome(float hyperGene) {
+        this.metaGenes = new MetaGenes(hyperGene);
     }
 
-    public Genome(
-            MetaGenes metaGenes,
-            List<Morphogen> morphogens,
-            List<Gene> genes,
-            float currentFitness,
-            float accumulatedFitness
-    ) {
-        this.metaGenes = new MetaGenes(metaGenes);
-        this.morphogens = new ArrayList<Morphogen>(morphogens.size());
-        for (Morphogen m : morphogens) {
+    public Genome(Genome other) {
+        this.metaGenes = new MetaGenes(other.getMetaGenes());
+        List<Morphogen> otherMorphogenes = other.getMorphogens();
+        this.morphogens = new ArrayList<Morphogen>(otherMorphogenes.size());
+        for (Morphogen m : otherMorphogenes) {
             this.morphogens.add(new Morphogen(m));
         }
-        this.genes = new ArrayList<Gene>(genes.size());
-        for (Gene g : genes) {
+        List<Gene> otherGenes = other.getGenes();
+        this.genes = new ArrayList<Gene>(otherGenes.size());
+        for (Gene g : otherGenes) {
             this.genes.add(new Gene(g));
         }
-        this.currentFitness = currentFitness;
-        this.accumulatedFitness = accumulatedFitness;
-    }
-
-    public Genome(MetaGenes metaGenes, List<Morphogen> morphogens, List<Gene> genes) {
-        this(metaGenes, morphogens, genes, Float.MAX_VALUE, 0.0f);
-    }
-
-    public Genome(Genome genome) {
-        this(
-                genome.getMetaGenes(),
-                genome.getMorphogens(),
-                genome.getGenes(),
-                genome.getCurrentFitness(),
-                genome.getAccumulatedFitness());
+        currentFitness = Float.MAX_VALUE;
+        accumulatedFitness = 0.0f;
     }
 
     public MetaGenes getMetaGenes() {
