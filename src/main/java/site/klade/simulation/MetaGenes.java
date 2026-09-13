@@ -9,20 +9,20 @@ public class MetaGenes {
     private float hyperGene; // (0.0, 1.0] Self-adaptive R_max hyper-gene: scales effective rank and mutation intensity
 
     private float initialAngle; // [0.0, 360.0] Initial spawn angle in degrees
-
     // Constructor for parser
+
     public MetaGenes() {
         this.hyperGene = 0.5f;
         this.initialAngle = 0.0f;
     }
-
     // Constructor for first generation initialization and loading from DTO
+
     private MetaGenes(float hyperGene, float initialAngle) {
         this.hyperGene = hyperGene;
         this.initialAngle = initialAngle;
     }
-
     // Constructor for offspring creation
+
     public MetaGenes(MetaGenes other) {
         this.hyperGene = other.hyperGene;
         this.initialAngle = other.initialAngle;
@@ -42,6 +42,10 @@ public class MetaGenes {
 
     public float getHyperGene() {
         return hyperGene;
+    }
+
+    // used in mutation
+    public void setInitialAngle(float initialAngle) {this.initialAngle = initialAngle;
     }
 
     public float getInitialAngle() {
