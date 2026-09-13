@@ -10,6 +10,12 @@ public class MetaGenes {
 
     private float initialAngle; // [0.0, 360.0] Initial spawn angle in degrees
 
+    // Constructor for parser
+    public MetaGenes() {
+        this.hyperGene = 0.5f;
+        this.initialAngle = 0.0f;
+    }
+
     // Constructor for first generation initialization and loading from DTO
     private MetaGenes(float hyperGene, float initialAngle) {
         this.hyperGene = hyperGene;
