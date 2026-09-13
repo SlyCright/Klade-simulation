@@ -48,10 +48,6 @@ public class MetaGenes {
         return initialAngle;
     }
 
-    public void setInitialAngle(float initialAngle) {
-        this.initialAngle = initialAngle;
-    }
-
     @Override
     public String toString() {
         return "{\"hyperGene\": " + hyperGene + ", \"initialAngle\": " + initialAngle + "}";
