@@ -7,9 +7,9 @@ public class Genome {
 
     private final MetaGenes metaGenes;
 
-    private List<Morphogen> morphogens = new ArrayList<Morphogen>();
-
     private List<Gene> genes = new ArrayList<Gene>();
+
+    private List<Morphogen> morphogens = new ArrayList<Morphogen>();
 
     private float currentFitness = Float.MAX_VALUE;  // Updated every battle tick
 
@@ -44,12 +44,29 @@ public class Genome {
         this.genes = new ArrayList<Gene>(genes);
     }
 
+    public void resetCurrentFitness() {
+        this.currentFitness = Float.MAX_VALUE;
+    }
+
+    public void resetFitnesses() {
+        this.currentFitness = Float.MAX_VALUE;
+        this.accumulatedFitness = 0.0f;
+    }
+
+    public void updateAccumulatedFitness() {
+        accumulatedFitness += currentFitness;
+    }
+
     public MetaGenes getMetaGenes() {
         return metaGenes;
     }
 
     public float getInitialAngle() {
         return metaGenes.getInitialAngle();
+    }
+
+    public float getHyperGene() {
+        return metaGenes.getHyperGene();
     }
 
     public List<Morphogen> getMorphogens() {
@@ -74,19 +91,6 @@ public class Genome {
 
     public void setAccumulatedFitness(float accumulatedFitness) {
         this.accumulatedFitness = accumulatedFitness;
-    }
-
-    public void resetCurrentFitness() {
-        this.currentFitness = Float.MAX_VALUE;
-    }
-
-    public void resetFitnesses() {
-        this.currentFitness = Float.MAX_VALUE;
-        this.accumulatedFitness = 0.0f;
-    }
-
-    public void updateAccumulatedFitness() {
-        accumulatedFitness += currentFitness;
     }
 
     @Override
