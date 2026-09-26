@@ -66,15 +66,13 @@ public final class Index implements Comparable<Index> {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        appendTo(result);
+        appendToString(result);
         return result.toString();
     }
 
-    private void appendTo(StringBuilder result) {
+    private void appendToString(StringBuilder result) {
         result.append(value).append('.');
-        if (nested != null) {
-            nested.appendTo(result);
-        }
+        if (nested != null) nested.appendToString(result);
     }
 
     @Override
@@ -88,9 +86,7 @@ public final class Index implements Comparable<Index> {
             left = left.nested;
             right = right.nested;
         }
-        if (left == null && right == null) {
-            return 0;
-        }
+        if (left == null && right == null) return 0;
         return left == null ? -1 : 1;
     }
 
