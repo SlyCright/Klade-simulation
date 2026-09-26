@@ -23,7 +23,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  *   <li>Canonical form is obtained via toString() and always ends with a dot ("2.1.");
  *       parse accepts both spellings.</li>
  *   <li>Indexes encode order only — no ownership/tree semantics, no tombstones.</li>
- *   <li>Pure immutable value: derivation operations never mutate any node, shared tails are safe.</li>
+ *   <li>Pure immutable value. Structural derivations (segment access, parent/extend,
+ *       increment/decrement, prefix relation) live in the web-app's {@code evolution}
+ *       utilities; this test covers the value semantics + I/O only.</li>
  * </ul>
  */
 @DisplayName("Index — hierarchical dotted gene index (value type)")
@@ -50,8 +52,6 @@ class IndexTest {
         assertThat(i.getValue()).isEqualTo(3);
         assertThat(i.getNested()).isNull();
         assertThat(i.isTerminal()).isTrue();
-        assertThat(i.segmentCount()).isEqualTo(1);
-        assertThat(i.segmentAt(0)).isEqualTo(3);
     }
 
     @Test
@@ -63,30 +63,6 @@ class IndexTest {
         assertThat(i.getNested().getValue()).isEqualTo(1);
         assertThat(i.getNested().isTerminal()).isTrue();
         assertThat(i.isTerminal()).isFalse();
-        assertThat(i.segmentCount()).isEqualTo(2);
-        assertThat(i.segmentAt(0)).isEqualTo(2);
-        assertThat(i.segmentAt(1)).isEqualTo(1);
-    }
-
-    @Test
-    @DisplayName("deep chain exposes all segments in order")
-    void deepChainSegments() {
-        Index i = new Index(1, new Index(33, new Index(15, new Index(4))));
-        assertThat(i.segmentCount()).isEqualTo(4);
-        assertThat(i.segmentAt(0)).isEqualTo(1);
-        assertThat(i.segmentAt(1)).isEqualTo(33);
-        assertThat(i.segmentAt(2)).isEqualTo(15);
-        assertThat(i.segmentAt(3)).isEqualTo(4);
-        assertThat(i.getValue()).isEqualTo(1);
-        assertThat(i.getNested().getValue()).isEqualTo(33);
-    }
-
-    @Test
-    @DisplayName("segmentAt out of bounds -> IndexOutOfBoundsException")
-    void segmentAtOutOfBounds() {
-        Index i = idx("1.33.15.4"); // comment: bounds choice is the natural JDK one
-        assertThatThrownBy(() -> i.segmentAt(-1)).isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> i.segmentAt(4)).isInstanceOf(IndexOutOfBoundsException.class);
     }
 
     // ---------------------------------------------------------------- string form
@@ -170,16 +146,6 @@ class IndexTest {
         assertThat(parsed.isTerminal()).isFalse();
     }
 
-    @Test
-    @DisplayName("parse(\"0.-1.0\") chain carries negative segment")
-    void parseNegativeChain() {
-        Index parsed = idx("0.-1.0");
-        assertThat(parsed.getValue()).isEqualTo(0);
-        assertThat(parsed.getNested().getValue()).isEqualTo(-1);
-        assertThat(parsed.getNested().getNested().getValue()).isEqualTo(0);
-        assertThat(parsed.segmentCount()).isEqualTo(3);
-    }
-
     // ---------------------------------------------------------------- parse: invalid
 
     @Test
@@ -245,10 +211,10 @@ class IndexTest {
         // 1: 0. | 2: 0.-1. | 3: 0.0. | 4: 0.1. | 5: 1. | 6: 1.0. | 7: 2. | 8: 3.
         List<Index> indexes = new ArrayList<>();
         Collections.addAll(indexes, idx("1."), idx("0.0."), idx("3."), idx("0.-1."),
-                idx("2."), idx("0."), idx("1.0."), idx("0.1."));
+                idx("2."), idx("0."), idx("1.0."), idx("0.1."), idx("-1."), idx("-1.2."));
         Collections.sort(indexes);
         assertThat(toStrings(indexes)).containsExactly(
-                "0.", "0.-1.", "0.0.", "0.1.", "1.", "1.0.", "2.", "3.");
+                "-1.", "-1.2.", "0.", "0.-1.", "0.0.", "0.1.", "1.", "1.0.", "2.", "3.");
     }
 
     @Test
@@ -315,131 +281,6 @@ class IndexTest {
                         .isEqualTo(-idx(b).compareTo(idx(a)));
             }
         }
-    }
-
-    // ---------------------------------------------------------------- derivation
-
-    @ParameterizedTest(name = "[{index}] incrementLast \"{0}\" -> \"{1}\"")
-    @CsvSource({
-            "0.0.,   0.1.",
-            "2.,     3.",
-            "-1.,    0.",       // -1 -> 0 crosses zero cleanly
-            "0.-1.,  0.0.",
-            "1.2.,   1.3."
-    })
-    @DisplayName("incrementLast bumps the last segment by +1")
-    void incrementLast(String input, String expected) {
-        assertThat(idx(input).incrementLast().toString()).isEqualTo(expected);
-    }
-
-    @ParameterizedTest(name = "[{index}] decrementLast \"{0}\" -> \"{1}\"")
-    @CsvSource({
-            "0.,     -1.",      // 0 -> -1 crosses zero cleanly
-            "0.0.,   0.-1.",
-            "1.,     0.",
-            "0.-2.,  0.-3.",
-            "3.,     2."
-    })
-    @DisplayName("decrementLast bumps the last segment by -1")
-    void decrementLast(String input, String expected) {
-        assertThat(idx(input).decrementLast().toString()).isEqualTo(expected);
-    }
-
-    @ParameterizedTest(name = "[{index}] extend \"{0}\" + {1} -> \"{2}\"")
-    @CsvSource({
-            "2.1.,   4,   2.1.4.",
-            "2.1.,   -3,  2.1.-3.",
-            "0.,     0,   0.0.",
-            "1.0.,   7,   1.0.7."
-    })
-    @DisplayName("extend appends a new terminal segment")
-    void extendAppendsSegment(String input, int segment, String expected) {
-        assertThat(idx(input).extend(segment).toString()).isEqualTo(expected);
-    }
-
-    @Test
-    @DisplayName("derivation never mutates the source chain (immutability)")
-    void derivationDoesNotMutateSource() {
-        Index source = idx("0.0.");
-        source.incrementLast();
-        source.decrementLast();
-        source.extend(5);
-        assertThat(source.toString()).isEqualTo("0.0.");
-        assertThat(idx("0.0.").incrementLast().toString()).isEqualTo("0.1.");
-        assertThat(idx("0.0.")).isEqualTo(idx("0.0."));
-    }
-
-    @Test
-    @DisplayName("shared tails are unaffected by operations on a sibling chain")
-    void sharedTailSafety() {
-        Index shared = new Index(1);
-        Index left = new Index(2, shared);
-        Index right = new Index(5, shared);
-
-        left.incrementLast();
-        left.extend(4);
-        left.parent();
-
-        assertThat(shared.getValue()).isEqualTo(1);
-        assertThat(shared.toString()).isEqualTo("1.");
-        assertThat(right.toString()).isEqualTo("5.1.");
-        assertThat(left.toString()).isEqualTo("2.1."); // untouched by the discarded results
-    }
-
-    @ParameterizedTest(name = "[{index}] \"{0}\" prefix-of \"{1}\" -> {2}")
-    @CsvSource({
-            "2.1.,   2.1.,     true",    // F4: reflexive
-            "2.,     2.1.,     true",
-            "0.-1.,  0.-1.0.,  true",
-            "2.1.3., 2.1.,     false",
-            "2.,     3.,       false",
-            "0.1.,   0.-1.,    false"
-    })
-    @DisplayName("isPrefixOf — pure path-prefix relation (order geometry, not ownership)")
-    void isPrefixOf(String a, String b, boolean expected) {
-        assertThat(idx(a).isPrefixOf(idx(b))).isEqualTo(expected);
-    }
-
-    @ParameterizedTest(name = "[{index}] parent of \"{0}\" -> \"{1}\"")
-    @CsvSource({
-            "2.1.3.,   2.1.",
-            "0.-1.0.,  0.-1.",
-            "3.,       ",          // F4: parent of a terminal node is null
-            "0.,       "
-    })
-    @DisplayName("parent drops the last segment; terminal node has no parent")
-    void parentDropsLastSegment(String input, String expected) {
-        Index parent = idx(input).parent();
-        if (expected == null || expected.isEmpty()) {
-            assertThat(parent).isNull();
-        } else {
-            assertThat(parent.toString()).isEqualTo(expected);
-        }
-    }
-
-    @Test
-    @DisplayName("parent().extend() round-trips within the same level")
-    void parentExtendRoundTrip() {
-        assertThat(idx("2.1.3.").parent().extend(9).toString()).isEqualTo("2.1.9.");
-        assertThat(idx("0.-1.0.").parent().extend(-4).toString()).isEqualTo("0.-1.-4.");
-    }
-
-    @Test
-    @DisplayName("F5: incrementLast overflows -> IllegalArgumentException")
-    void incrementLastOverflow() {
-        assertThatThrownBy(() -> new Index(Integer.MAX_VALUE).incrementLast())
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new Index(0, new Index(Integer.MAX_VALUE)).incrementLast())
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("F5: decrementLast underflows -> IllegalArgumentException")
-    void decrementLastUnderflow() {
-        assertThatThrownBy(() -> new Index(Integer.MIN_VALUE).decrementLast())
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new Index(0, new Index(Integer.MIN_VALUE)).decrementLast())
-                .isInstanceOf(IllegalArgumentException.class);
     }
 
 }

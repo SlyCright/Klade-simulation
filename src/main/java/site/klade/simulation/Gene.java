@@ -2,30 +2,30 @@ package site.klade.simulation;
 
 public class Gene {
 
-    private String condition;
+    private String conditions;
 
     private GeneAction action;
 
     private String parameters;
 
-    public Gene(String condition, GeneAction action, String parameters) {
-        this.condition = condition;
+    public Gene(String conditions, GeneAction action, String parameters) {
+        this.conditions = conditions;
         this.action = action;
         this.parameters = parameters;
     }
 
     public Gene(Gene other) {
-        this.condition = other.condition;
+        this.conditions = other.conditions;
         this.action = other.action;
         this.parameters = other.parameters;
     }
 
-    public String getCondition() {
-        return condition;
+    public String getConditions() {
+        return conditions;
     }
 
-    public void setCondition(String condition) {
-        this.condition = condition;
+    public void setConditions(String conditions) {
+        this.conditions = conditions;
     }
 
     public GeneAction getAction() {
@@ -46,7 +46,7 @@ public class Gene {
 
     @Override
     public String toString() {
-        return "Gene(condition=" + condition + ", action=" + action + ", parameters=" + parameters + ")";
+        return "Gene(condition=" + conditions + ", action=" + action + ", parameters=" + parameters + ")";
     }
 
 }
