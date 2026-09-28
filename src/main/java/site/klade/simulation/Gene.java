@@ -1,16 +1,18 @@
 package site.klade.simulation;
 
+import site.klade.simulation.condition.Cond;
+
 public class Gene {
 
     private Index index;
 
-    private String conditions;
+    private Cond conditions;
 
     private GeneAction action;
 
     private String parameters;
 
-    public Gene(Index index, String conditions, GeneAction action, String parameters) {
+    public Gene(Index index, Cond conditions, GeneAction action, String parameters) {
         this.index = index;
         this.conditions = conditions;
         this.action = action;
@@ -19,16 +21,16 @@ public class Gene {
 
     public Gene(Gene other) {
         this.index = other.index;  // Index is immutable. So consider as deep copy constructor
-        this.conditions = other.conditions;
+        this.conditions = other.conditions;  // Cond is immutable. So consider as deep copy constructor
         this.action = other.action;
         this.parameters = other.parameters;
     }
 
-    public String getConditions() {
+    public Cond getConditions() {
         return conditions;
     }
 
-    public void setConditions(String conditions) {
+    public void setConditions(Cond conditions) {
         this.conditions = conditions;
     }
 
@@ -58,7 +60,7 @@ public class Gene {
 
     @Override
     public String toString() {
-        return "Gene(" + index + " condition=" + conditions + ", action=" + action
+        return "Gene(" + index + " condition=" + (conditions == null ? "" : conditions) + ", action=" + action
                 + ", parameters=" + parameters + ")";
     }
 
