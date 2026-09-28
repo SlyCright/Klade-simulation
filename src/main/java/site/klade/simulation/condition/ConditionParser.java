@@ -26,11 +26,11 @@ package site.klade.simulation.condition;
  * {@code equals}, {@code hashCode} — is recursive too, so an unbounded tree overflows the stack
  * during *printing*, not just during parsing. The parser therefore enforces two independent bounds:</p>
  * <ul>
- *   <li>{@link #MAX_TREE_DEPTH} — the depth of the <b>tree it builds</b>. This is the shared
+ *   <li>{@link #maxTreeDepth} — the depth of the <b>tree it builds</b>. This is the shared
  *       invariant; it must be enforced identically by structural mutation. It is checked
  *       incrementally while building, because a flat {@code a AND b AND c …} chain is assembled by
  *       the operator <i>loops</i> without any recursion, so a recursion-only guard would never see it.</li>
- *   <li>{@link #MAX_PAREN_DEPTH} — the parser's own recursion depth. Parentheses do not add AST
+ *   <li>{@link #maxParenDepth} — the parser's own recursion depth. Parentheses do not add AST
  *       depth, so {@code ((((x))))} needs this second bound to keep the recursion itself in check.</li>
  * </ul>
  *
@@ -49,14 +49,18 @@ public final class ConditionParser {
      * tree that the parser rejects — and whose {@code toString()} would overflow the stack before any
      * parser saw it. Chosen far below the observed overflow point (a ~2000-deep chain already overflows
      * a default stack at print time) while being far above any plausible evolved condition.</p>
+     *
+     * <p>This value can be configured at runtime via {@link #configureLimits(int, int)}.</p>
      */
-    public static final int MAX_TREE_DEPTH = 64;
+    private static int maxTreeDepth = 64;
 
     /**
      * Maximum parenthesis nesting the parser will recurse through. Parentheses do not contribute to
      * AST depth, so this is a separate pathology guard for hand-written input only.
+     *
+     * <p>This value can be configured at runtime via {@link #configureLimits(int, int)}.</p>
      */
-    private static final int MAX_PAREN_DEPTH = 256;
+    private static int maxParenDepth = 256;
 
     private final String src;
 
@@ -66,6 +70,28 @@ public final class ConditionParser {
 
     private ConditionParser(String src) {
         this.src = src;
+    }
+
+    /**
+     * Configures the parser limits at runtime. This must be called before any parsing occurs,
+     * typically at application startup.
+     *
+     * @param treeDepth the maximum AST depth
+     * @param parenDepth the maximum parenthesis nesting depth
+     */
+    public static void configureLimits(int treeDepth, int parenDepth) {
+        maxTreeDepth = treeDepth;
+        maxParenDepth = parenDepth;
+    }
+
+    /**
+     * Returns the current maximum tree depth limit. This is used by structural mutation
+     * to enforce the same invariant.
+     *
+     * @return the maximum AST depth
+     */
+    public static int getMaxTreeDepth() {
+        return maxTreeDepth;
     }
 
     /**
@@ -174,9 +200,9 @@ public final class ConditionParser {
         char c = src.charAt(pos);
         if (c == '(') {
             int open = pos;
-            if (++parenDepth > MAX_PAREN_DEPTH) {
+            if (++parenDepth > maxParenDepth) {
                 throw new ConditionParseException(
-                        "condition nesting too deep (max " + MAX_PAREN_DEPTH + ")", open);
+                        "condition nesting too deep (max " + maxParenDepth + ")", open);
             }
             pos++;
             Built inner = parseOr();
@@ -214,9 +240,9 @@ public final class ConditionParser {
 
     /** Applies the shared tree-depth invariant at the point of construction. */
     private Built build(Object value, int depth) {
-        if (depth > MAX_TREE_DEPTH) {
+        if (depth > maxTreeDepth) {
             throw new ConditionParseException(
-                    "condition too deep (max " + MAX_TREE_DEPTH + ")", pos);
+                    "condition too deep (max " + maxTreeDepth + ")", pos);
         }
         return new Built(value, depth);
     }
