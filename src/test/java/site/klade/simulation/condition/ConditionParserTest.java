@@ -1,6 +1,7 @@
 package site.klade.simulation.condition;
 
 import org.junit.jupiter.api.Test;
+import site.klade.simulation.Index;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -44,19 +45,19 @@ class ConditionParserTest {
     @Test
     void associativityIsPreservedThroughRoundTrip() {
         Cond rightNested = new BoolOp(
-                new Compare(new MorphogenRef(1), CmpOp.GT, new Literal(1.0f)),
+                new Compare(new MorphogenRef(new Index(1)), CmpOp.GT, new Literal(1.0f)),
                 BoolOpKind.AND,
                 new BoolOp(
-                        new Compare(new MorphogenRef(2), CmpOp.GT, new Literal(1.0f)),
+                        new Compare(new MorphogenRef(new Index(2)), CmpOp.GT, new Literal(1.0f)),
                         BoolOpKind.AND,
-                        new Compare(new MorphogenRef(3), CmpOp.GT, new Literal(1.0f))));
+                        new Compare(new MorphogenRef(new Index(3)), CmpOp.GT, new Literal(1.0f))));
         Cond leftNested = new BoolOp(
                 new BoolOp(
-                        new Compare(new MorphogenRef(1), CmpOp.GT, new Literal(1.0f)),
+                        new Compare(new MorphogenRef(new Index(1)), CmpOp.GT, new Literal(1.0f)),
                         BoolOpKind.AND,
-                        new Compare(new MorphogenRef(2), CmpOp.GT, new Literal(1.0f))),
+                        new Compare(new MorphogenRef(new Index(2)), CmpOp.GT, new Literal(1.0f))),
                 BoolOpKind.AND,
-                new Compare(new MorphogenRef(3), CmpOp.GT, new Literal(1.0f)));
+                new Compare(new MorphogenRef(new Index(3)), CmpOp.GT, new Literal(1.0f)));
 
         assertThat(leftNested).isNotEqualTo(rightNested);
         assertThat(ConditionParser.parse(leftNested.toString())).isEqualTo(leftNested);
@@ -69,12 +70,12 @@ class ConditionParserTest {
     void andBindsTighterThanOr() {
         Cond parsed = ConditionParser.parse("Mrph[1] > 1.0 OR Mrph[2] > 1.0 AND Mrph[3] > 1.0");
         Cond expected = new BoolOp(
-                new Compare(new MorphogenRef(1), CmpOp.GT, new Literal(1.0f)),
+                new Compare(new MorphogenRef(new Index(1)), CmpOp.GT, new Literal(1.0f)),
                 BoolOpKind.OR,
                 new BoolOp(
-                        new Compare(new MorphogenRef(2), CmpOp.GT, new Literal(1.0f)),
+                        new Compare(new MorphogenRef(new Index(2)), CmpOp.GT, new Literal(1.0f)),
                         BoolOpKind.AND,
-                        new Compare(new MorphogenRef(3), CmpOp.GT, new Literal(1.0f))));
+                        new Compare(new MorphogenRef(new Index(3)), CmpOp.GT, new Literal(1.0f))));
         assertThat(parsed).isEqualTo(expected);
     }
 
@@ -82,7 +83,7 @@ class ConditionParserTest {
     @Test
     void notAppliesToTheWholeComparison() {
         Cond parsed = ConditionParser.parse("NOT Mrph[1] > 1.0");
-        Cond expected = new Not(new Compare(new MorphogenRef(1), CmpOp.GT, new Literal(1.0f)));
+        Cond expected = new Not(new Compare(new MorphogenRef(new Index(1)), CmpOp.GT, new Literal(1.0f)));
         assertThat(parsed).isEqualTo(expected);
     }
 
@@ -98,12 +99,72 @@ class ConditionParserTest {
 
     @Test
     void morphogenSpellingsAreAcceptedAndCanonicalised() {
-        Cond expected = new Compare(new MorphogenRef(1), CmpOp.GT, new Literal(1.0f));
+        Cond expected = new Compare(new MorphogenRef(new Index(1)), CmpOp.GT, new Literal(1.0f));
         assertThat(ConditionParser.parse("Mrph[1] > 1.0")).isEqualTo(expected);
         assertThat(ConditionParser.parse("Morphogen[1] > 1.0")).isEqualTo(expected);
         assertThat(ConditionParser.parse("Mph[1] > 1.0")).isEqualTo(expected);
         assertThat(ConditionParser.parse("mrph[ 1 ] > 1.0")).isEqualTo(expected);
-        assertThat(expected.toString()).contains("Mrph[1]");
+        assertThat(expected.toString()).contains("Morphogen[1]");
+    }
+
+    @Test
+    void hierarchicalMorphogenIdsAreSupported() {
+        Cond expected = new Compare(
+                new MorphogenRef(Index.parse("1.1")), CmpOp.GT, new Literal(1.0f));
+        assertThat(ConditionParser.parse("Morphogen[1.1] > 1.0")).isEqualTo(expected);
+        assertThat(ConditionParser.parse("Mrph[1.1] > 1.0")).isEqualTo(expected);
+        assertThat(expected.toString()).contains("Morphogen[1.1]");
+        // Canonical form must round-trip, including a multi-level id with a negative segment.
+        Cond deep = ConditionParser.parse("Morphogen[2.1.-3] > 0.5");
+        assertThat(ConditionParser.parse(deep.toString())).isEqualTo(deep);
+    }
+
+    @Test
+    void prefixParsingStopsBeforeTheAction() {
+        String[] stops = {"become", "lay_segment", "express"};
+        String line = "if Mrph[2] > 1.0 become muscle";
+        ConditionPrefix prefix = ConditionParser.parsePrefix(line, stops);
+        assertThat(prefix.condition).isNotNull();
+        assertThat(line.substring(prefix.end).trim()).startsWith("become");
+        assertThat(prefix.condition)
+                .isEqualTo(ConditionParser.parse("Mrph[2] > 1.0"));
+    }
+
+    @Test
+    void prefixParsingWithoutAConditionYieldsNullAtPositionZero() {
+        String[] stops = {"become", "lay_segment", "express"};
+        ConditionPrefix prefix = ConditionParser.parsePrefix("become muscle", stops);
+        assertThat(prefix.condition).isNull();
+        assertThat(prefix.end).isZero();
+    }
+
+    @Test
+    void stopWordsAreMatchedAtWordBoundariesOnly() {
+        String[] stops = {"express"};
+        // "expression" must not be treated as the stop word "express".
+        assertThatThrownBy(() -> ConditionParser.parsePrefix("expression > 1.0", stops))
+                .isInstanceOf(ConditionParseException.class);
+    }
+
+    @Test
+    void numericArgumentsShareTheConditionLexer() {
+        // A literal argument, as in `become muscle length 40%`.
+        ConditionParser.NumberPrefix literal = ConditionParser.parseNumber("40%");
+        assertThat(literal.value).isEqualTo(new Literal(40f));
+        assertThat(literal.end).isEqualTo(2);
+
+        // A reference argument, as in `express Morphogen[1] amount 2.0`.
+        ConditionParser.NumberPrefix reference = ConditionParser.parseNumber("Morphogen[1] amount 2.0");
+        assertThat(reference.value).isEqualTo(new MorphogenRef(new Index(1)));
+        assertThat("Morphogen[1] amount 2.0".substring(reference.end).trim())
+                .isEqualTo("amount 2.0");
+
+        // Signed and fractional forms.
+        assertThat(ConditionParser.parseNumber("-1.5").value).isEqualTo(new Literal(-1.5f));
+
+        // A boolean is not a number.
+        assertThatThrownBy(() -> ConditionParser.parseNumber("(Morphogen[1] > 1.0)"))
+                .isInstanceOf(ConditionParseException.class);
     }
 
     @Test
@@ -229,10 +290,10 @@ class ConditionParserTest {
 
     /** A left-associative AND chain of {@code ands} operators. A leaf {@code Compare} has depth 2. */
     private static String andChainText(int ands) {
-        Cond chain = new Compare(new MorphogenRef(1), CmpOp.GT, new Literal(1.0f));
+        Cond chain = new Compare(new MorphogenRef(new Index(1)), CmpOp.GT, new Literal(1.0f));
         for (int i = 0; i < ands; i++) {
             chain = new BoolOp(chain, BoolOpKind.AND,
-                    new Compare(new MorphogenRef(2), CmpOp.GT, new Literal(2.0f)));
+                    new Compare(new MorphogenRef(new Index(2)), CmpOp.GT, new Literal(2.0f)));
         }
         return chain.toString();
     }

@@ -1,5 +1,7 @@
 package site.klade.simulation.condition;
 
+import site.klade.simulation.Index;
+
 /**
  * Recursive-descent parser for the condition grammar of spec §3.5.
  *
@@ -39,8 +41,15 @@ package site.klade.simulation.condition;
  */
 public final class ConditionParser {
 
-    /** Accepted spellings for a morphogen reference; canonical output is always {@code Mrph[}. */
-    private static final String[] MORPHOGEN_WORDS = {"Mrph", "Morphogen", "Mph"};
+    /**
+     * Accepted spellings for a morphogen reference. Canonical output is always the full word
+     * ({@code Morphogen[}), per the readability rule: no abbreviations of in-game terms. The short
+     * forms remain accepted on input so pre-existing genomes keep loading.
+     */
+    private static final String[] MORPHOGEN_WORDS = {"Morphogen", "Mrph", "Mph"};
+
+    /** No stop words: used by {@link #parse}, which requires the whole text to be a condition. */
+    private static final String[] NO_STOP_WORDS = new String[0];
 
     /**
      * Maximum depth of the condition tree, counting a leaf as depth 1.
@@ -67,6 +76,12 @@ public final class ConditionParser {
     private int pos;
 
     private int parenDepth;
+
+    /**
+     * Words that terminate a condition during {@link #parsePrefix}. Always non-null; empty for
+     * {@link #parse}, which requires the whole text to be a condition.
+     */
+    private String[] stopWords = NO_STOP_WORDS;
 
     private ConditionParser(String src) {
         this.src = src;
@@ -95,7 +110,7 @@ public final class ConditionParser {
     }
 
     /**
-     * Parses a condition expression.
+     * Parses a condition expression that must consume the whole text.
      *
      * @param text the condition text; may be {@code null} or blank
      * @return the parsed condition, or {@code null} when {@code text} is {@code null}/blank
@@ -103,16 +118,96 @@ public final class ConditionParser {
      * @throws ConditionParseException if the text is non-blank but malformed, or too deeply nested
      */
     public static Cond parse(String text) {
-        if (text == null) return null;
+        ConditionPrefix prefix = parsePrefix(text, NO_STOP_WORDS);
+        if (prefix.condition == null) {
+            // With no stop words, a null condition means the text was blank (or only comments).
+            return null;
+        }
         ConditionParser parser = new ConditionParser(text);
-        parser.skipIgnorable();
-        if (parser.atEnd()) return null;
-        Cond result = (Cond) parser.parseOr().value;
+        parser.pos = prefix.end;
         parser.skipIgnorable();
         if (!parser.atEnd()) {
             throw new ConditionParseException("unexpected trailing input", parser.pos);
         }
-        return result;
+        return prefix.condition;
+    }
+
+    /**
+     * Parses a condition at the <b>start</b> of {@code src}, stopping before any of {@code stopWords}.
+     *
+     * <p>Needed because a gene line is a condition followed by an action
+     * ({@code if Morphogen[1] > 1.0 become muscle}), while {@link #parse} rejects any trailing text. The
+     * returned {@link ConditionPrefix#end} is where the caller should continue reading.</p>
+     *
+     * <p>A stop word is matched with the same word-boundary rule as the boolean keywords, so
+     * {@code express} cannot be found inside a longer identifier. The stop word itself is
+     * <b>not</b> consumed.</p>
+     *
+     * <p>When the text starts with a stop word, {@link ConditionPrefix#condition} is {@code null} and
+     * {@code end} is the position of that word — meaning "unconditional". That is a valid state, not an
+     * error, exactly as blank input is for {@link #parse}.</p>
+     *
+     * @param src       the text to read; {@code null} or blank yields a null condition at position 0
+     * @param stopWords words that terminate the condition; never null, may be empty
+     * @throws ConditionParseException if a condition begins but is malformed, or too deeply nested
+     */
+    public static ConditionPrefix parsePrefix(String src, String[] stopWords) {
+        if (src == null) return new ConditionPrefix(null, 0);
+        String[] stops = (stopWords == null) ? NO_STOP_WORDS : stopWords;
+        ConditionParser parser = new ConditionParser(src);
+        parser.stopWords = stops;
+        parser.skipIgnorable();
+        // A condition in DNA is introduced by `if`. It is optional here so that both the raw condition
+        // ("Morphogen[1] > 1.0", as stored on a Gene) and a full DNA line are accepted by the same entry
+        // point. `tryKeyword` handles the word boundary, so an identifier like "iffy" is not affected.
+        parser.tryKeyword("if");
+        parser.skipIgnorable();
+        if (parser.atEnd() || parser.atStopWord()) {
+            return new ConditionPrefix(null, parser.pos);
+        }
+        Cond result = (Cond) parser.parseOr().value;
+        parser.skipIgnorable();
+        return new ConditionPrefix(result, parser.pos);
+    }
+
+    /**
+     * Parses a <b>numeric</b> expression at the start of {@code src}: either a literal or a morphogen
+     * reference. Used for gene arguments such as {@code express Morphogen[1] amount 2.0}, where the
+     * argument is an {@code Expr} rather than a full condition.
+     *
+     * <p>Sharing the parser's number and reference reading is what keeps {@code 30°} in
+     * {@code lay_segment 30°} and {@code 1.0} in {@code Morphogen[1] > 1.0} lexed by exactly the same
+     * code, so the two syntaxes cannot drift.</p>
+     */
+    public static NumberPrefix parseNumber(String src) {
+        if (src == null) {
+            throw new ConditionParseException("expected a numeric argument", 0);
+        }
+        ConditionParser parser = new ConditionParser(src);
+        parser.skipIgnorable();
+        if (parser.atEnd()) {
+            throw new ConditionParseException("expected a numeric argument", parser.pos);
+        }
+        Built built = parser.parseAtom();
+        if (built.value instanceof Cond) {
+            throw new ConditionParseException(
+                    "expected a numeric argument, found a condition", parser.pos);
+        }
+        parser.skipIgnorable();
+        return new NumberPrefix((Expr) built.value, parser.pos);
+    }
+
+    /** A numeric expression parsed from the start of a text, plus where it ended. */
+    public static final class NumberPrefix {
+
+        public final Expr value;
+
+        public final int end;
+
+        NumberPrefix(Expr value, int end) {
+            this.value = value;
+            this.end = end;
+        }
     }
 
     /** A parsed value plus the depth of the tree it represents; a leaf has depth 1. */
@@ -249,7 +344,15 @@ public final class ConditionParser {
 
     // ---------------------------------------------------------------- terminals
 
-    private int readMorphogenId(String word, int wordStart) {
+    /**
+     * Reads the dotted index inside {@code Morphogen[...]}, e.g. {@code 1} or {@code 1.1}.
+     *
+     * <p>Scans the index characters and delegates to {@link Index#parse}, which already owns the
+     * canonical spelling rules (it accepts both {@code 1.1} and {@code 1.1.} and rejects empty or
+     * malformed input). Sharing it means a morphogen id and a gene id can never disagree about what a
+     * legal index looks like.</p>
+     */
+    private Index readMorphogenId(String word, int wordStart) {
         skipIgnorable();
         if (atEnd() || src.charAt(pos) != '[') {
             throw new ConditionParseException("expected '[' after '" + word + "'", pos);
@@ -257,15 +360,15 @@ public final class ConditionParser {
         pos++;
         skipIgnorable();
         int start = pos;
-        while (!atEnd() && Character.isDigit(src.charAt(pos))) pos++;
+        while (!atEnd() && isIndexChar(src.charAt(pos))) pos++;
         if (start == pos) {
             throw new ConditionParseException("expected a morphogen id", pos);
         }
-        int id;
+        Index id;
         try {
-            id = Integer.parseInt(src.substring(start, pos));
-        } catch (NumberFormatException e) {
-            throw new ConditionParseException("morphogen id out of range", start);
+            id = Index.parse(src.substring(start, pos));
+        } catch (IllegalArgumentException e) {
+            throw new ConditionParseException("invalid morphogen id", start);
         }
         skipIgnorable();
         if (atEnd() || src.charAt(pos) != ']') {
@@ -400,6 +503,26 @@ public final class ConditionParser {
         return true;
     }
 
+    /**
+     * True when the next token is one of {@link #stopWords}, matched at a word boundary so that a stop
+     * word can never be found inside a longer identifier. Leaves {@link #pos} unchanged — the caller
+     * wants the stop word left in place, since the action parser reads it next.
+     */
+    private boolean atStopWord() {
+        for (String stop : stopWords) {
+            int start = pos;
+            if (!src.regionMatches(true, start, stop, 0, stop.length())) {
+                continue;
+            }
+            int end = start + stop.length();
+            if (end < src.length() && isWordChar(src.charAt(end))) {
+                continue;
+            }
+            return true;
+        }
+        return false;
+    }
+
     private String readWord() {
         int start = pos;
         while (!atEnd() && isLetter(src.charAt(pos))) pos++;
@@ -412,6 +535,15 @@ public final class ConditionParser {
 
     private static boolean isLetter(char c) {
         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+    }
+
+    /**
+     * Characters that may appear inside a dotted index: digits, the dot separator, and a sign for
+     * negative segments ({@code Index} permits them). Validation is left to {@link Index#parse}, so this
+     * only decides where the token ends.
+     */
+    private static boolean isIndexChar(char c) {
+        return Character.isDigit(c) || c == '.' || c == '-' || c == '+';
     }
 
     private static boolean isWordChar(char c) {

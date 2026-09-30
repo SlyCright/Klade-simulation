@@ -49,6 +49,17 @@ java {
 compileJava.options.release = 11
 compileTestJava.options.release = 11
 
+// Source files are UTF-8. Without this the compiler falls back to the platform charset (Cp1251 on the
+// developer's machine), which silently corrupts non-ASCII literals — notably the degree sign in the DNA
+// grammar, e.g. `lay_segment 30°`. The corruption only shows up at runtime as an unparsable genome, so
+// pinning the encoding here prevents a confusing class of bug.
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+tasks.withType(Test).configureEach {
+    systemProperty 'file.encoding', 'UTF-8'
+}
+
 // Simple JAR publication for local consumption
 publishing {
     publications {

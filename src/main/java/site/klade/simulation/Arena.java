@@ -1,5 +1,7 @@
 package site.klade.simulation;
 
+import site.klade.simulation.gene.ElementType;
+
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
@@ -47,7 +49,7 @@ public class Arena {
     private Entity createStemNode(float angleDegrees) {
         Entity stemNode = engine.createEntity();
         Node node = new Node();
-        node.nodeType = NodeType.STEM;
+        node.elementType = ElementType.STEM_NODE;
         stemNode.add(node);
         Kinematics kinematics = new Kinematics();
         float distance = settings.getInitialDistance();

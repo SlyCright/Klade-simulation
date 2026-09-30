@@ -52,9 +52,21 @@ public class MetaGenes {
         return initialAngle;
     }
 
+    /**
+     * The canonical body of the {@code --- Meta genes} section, e.g.
+     * {@code "hyperGene: 0.5 (Float)\ninitialAngle: 45 (Float)\n"}.
+     *
+     * <p>This is the same responsibility {@link site.klade.simulation.gene.Gene#toString()} has for a gene
+     * line and {@link Morphogen#toString()} for a morphogen line: each part of the genome knows its own
+     * canonical spelling, so the writer only assembles sections rather than defining formats. Delegating to
+     * {@link MetaGeneRegistry} keeps the field names and their order in one place.</p>
+     *
+     * <p>The section marker and the explanatory comment are document assembly rather than meta-gene
+     * spelling, so they belong to the writer and are not included here.</p>
+     */
     @Override
     public String toString() {
-        return "{\"hyperGene\": " + hyperGene + ", \"initialAngle\": " + initialAngle + "}";
+        return MetaGeneRegistry.renderLines(this);
     }
 
 }
